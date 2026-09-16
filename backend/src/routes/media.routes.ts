@@ -1,62 +1,45 @@
-import { Router } from 'express';
-import { prisma } from '../prisma';
-import { upload } from '../middleware/upload';
+import { Router, Request, Response } from 'express';
+import path from 'path';
+import fs from 'fs';
 
 const router = Router();
 
-function publicUrl(filename: string) {
-  return '/uploads/' + filename;
-}
-
-// POST /api/media/upload
-router.post('/upload', upload.single('image'), (req, res) => {
+// GET /api/media/:filename - Serve uploaded media files
+router.get('/:filename', (req: Request, res: Response) => {
   try {
-    if (!req.file) return res.status(400).json({ error: 'No image file uploaded' });
-    const url = publicUrl(req.file.filename);
-    res.status(201).json({ url, filename: req.file.filename });
-  } catch (e) {
-    res.status(500).json({ error: 'Upload failed' });
+    const filename = String(req.params.filename);
+    const uploadsDir = path.join(process.cwd(), 'uploads');
+    const filePath = path.join(uploadsDir, filename);
+
+    if (!fs.existsSync(filePath)) {
+      res.status(404).json({ message: 'Media file not found' });
+      return;
+    }
+
+    res.sendFile(filePath);
+  } catch (error) {
+    console.error('Error serving media file:', error);
+    res.status(500).json({ message: 'Internal server error' });
   }
 });
 
-// PATCH /api/media/casket/:id/image
-router.patch('/casket/:id/image', upload.single('image'), async (req, res) => {
+// DELETE /api/media/:filename - Delete uploaded media file
+router.delete('/:filename', (req: Request, res: Response) => {
   try {
-    let imageUrl = req.body.imageUrl;
-    if (req.file) {
-      imageUrl = publicUrl(req.file.filename);
-    }
-    
-    if (!imageUrl) {
-      return res.status(400).json({ error: 'No image provided' });
-    }
+    const filename = String(req.params.filename);
+    const uploadsDir = path.join(process.cwd(), 'uploads');
+    const filePath = path.join(uploadsDir, filename);
 
-    const item = await prisma.casketCatalog.update({
-      where: { id: req.params.id },
-      data: { imageUrl },
-    });
-    res.json(item);
-  } catch (e) {
-    console.error('Update casket image error:', e);
-    res.status(500).json({ error: 'Failed to update casket image' });
-  }
-});
-
-// PATCH /api/media/hearse/:id/image
-router.patch('/hearse/:id/image', upload.single('image'), async (req, res) => {
-  try {
-    let imageUrl = req.body.imageUrl;
-    if (req.file) {
-      imageUrl = publicUrl(req.file.filename);
+    if (!fs.existsSync(filePath)) {
+      res.status(404).json({ message: 'Media file not found' });
+      return;
     }
 
-    const item = await prisma.hearse.update({
-      where: { id: req.params.id },
-      data: { imageUrl },
-    });
-    res.json(item);
-  } catch (e) {
-    res.status(500).json({ error: 'Failed to update hearse image' });
+    fs.unlinkSync(filePath);
+    res.json({ message: 'Media file deleted successfully' });
+  } catch (error) {
+    console.error('Error deleting media file:', error);
+    res.status(500).json({ message: 'Internal server error' });
   }
 });
 
