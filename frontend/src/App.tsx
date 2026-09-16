@@ -8,7 +8,7 @@ import {
   MapPin, Navigation, Route, Building2
 } from 'lucide-react';
 
-const API = 'http://localhost:4000';
+const API = (import.meta as any).env.VITE_API_URL || 'http://localhost:4000';
 
 function mediaSrc(url?: string | null) {
   if (!url) return '';
@@ -944,7 +944,7 @@ const ClientWebsite = ({ onEnterAdmin, onEnterFamily, theme, onToggleTheme, addT
 // ============================================================================
 // FAMILY PORTAL VIEW
 // ============================================================================
-const FamilyPortal = ({ onBack, theme, addToast }: any) => {
+const StaffPortal = ({ onBack: _onBack, theme, addToast }: any) => {
   const isDark = theme === 'dark';
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [loadingAction, setLoadingAction] = useState<string | null>(null);
