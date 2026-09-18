@@ -3,10 +3,10 @@ import React, { useEffect, useState } from 'react';
 import {
   Car, Package, Plus, X, Lock, LogOut, ChevronLeft, Sparkles, Sun, Moon,
   Calculator, CheckCircle2, ChevronRight as RightArrow, Flower2, ArrowDownCircle,
-  Camera, LayoutDashboard, Trash2, UploadCloud, Feather,
+  Camera, LayoutDashboard, Trash2, UploadCloud, ZoomIn, Feather,
   PenTool, Copy, Share2, Eye, ImagePlus, Printer, FileText,
   User as UserIcon, DollarSign, Clock, AlertTriangle, Check, Search, RefreshCw,
-  MapPin, Navigation, Route
+  MapPin, Navigation, Route, Phone, Mail, UserCheck
 } from 'lucide-react';
 
 const API = import.meta.env.VITE_API_URL || 'http://localhost:4000';
@@ -200,7 +200,7 @@ const Toast = ({ message, type, onClose }: { message: string; type: 'success' | 
   return (
     <div className={`fixed bottom-5 right-5 z-[100] flex items-center gap-3 px-5 py-3.5 rounded-2xl shadow-2xl text-white font-semibold text-xs ${bgStyle}`}>
       <span>{message}</span>
-      <button onClick={onClose} className="p-1 rounded-full hover:bg-white/20"><X size={14} /></button>
+      <button onClick={onClose} className="p-1 rounded-full hover:bg-white/20 cursor-pointer"><X size={14} /></button>
     </div>
   );
 };
@@ -307,7 +307,7 @@ const TransportInvoiceModal = ({ transport, clientName, bookingNumber, onClose }
               <p className="text-[10px] text-amber-400 uppercase tracking-wider font-semibold">Ref: TRN-{bookingNumber}</p>
             </div>
           </div>
-          <button onClick={onClose} className="p-2 rounded-full hover:bg-white/10 transition"><X size={18} /></button>
+          <button onClick={onClose} className="p-2 rounded-full hover:bg-white/10 transition cursor-pointer"><X size={18} /></button>
         </div>
 
         <div className="p-6 md:p-8 space-y-6">
@@ -375,8 +375,8 @@ const TransportInvoiceModal = ({ transport, clientName, bookingNumber, onClose }
           </div>
 
           <div className="flex gap-3 pt-3 border-t border-stone-150">
-            <button onClick={handlePrint} className="flex-1 bg-amber-500 hover:bg-amber-400 text-stone-950 font-black py-3 rounded-xl text-xs uppercase tracking-wider flex items-center justify-center gap-2 transition shadow-md"><Printer size={14} /> Print Formal Invoice</button>
-            <button onClick={onClose} className="px-6 py-3 border border-stone-200 hover:bg-stone-50 font-bold rounded-xl text-xs transition">Close</button>
+            <button onClick={handlePrint} className="flex-1 bg-amber-500 hover:bg-amber-400 text-stone-950 font-black py-3 rounded-xl text-xs uppercase tracking-wider flex items-center justify-center gap-2 transition shadow-md cursor-pointer"><Printer size={14} /> Print Formal Invoice</button>
+            <button onClick={onClose} className="px-6 py-3 border border-stone-200 hover:bg-stone-50 font-bold rounded-xl text-xs transition cursor-pointer">Close</button>
           </div>
         </div>
       </div>
@@ -399,7 +399,7 @@ const ImageLightbox = ({ media, onClose }: { media: { url: string; title: string
             <h3 className="text-base font-serif font-bold text-amber-100">{media.title}</h3>
             {media.subtitle && <p className="text-[11px] text-stone-400">{media.subtitle}</p>}
           </div>
-          <button onClick={onClose} className="p-2 rounded-full bg-white/10 hover:bg-white/20 text-xs font-bold flex items-center gap-1 transition"><X size={16} /> Close</button>
+          <button onClick={onClose} className="p-2 rounded-full bg-white/10 hover:bg-white/20 text-xs font-bold flex items-center gap-1 transition cursor-pointer"><X size={16} /> Close</button>
         </div>
         <div className="rounded-2xl overflow-hidden border border-stone-800 bg-stone-950 flex justify-center max-h-[80vh]">
           <img src={media.url} alt={media.title} className="max-h-[80vh] max-w-full object-contain" />
@@ -412,7 +412,7 @@ const ImageLightbox = ({ media, onClose }: { media: { url: string; title: string
 const MemorialPageViewer = ({ memorial, onClose }: { memorial: Memorial; onClose: () => void }) => (
   <div className="fixed inset-0 z-[90] bg-gradient-to-br from-[#2A1810] via-[#1C0F0A] to-[#110905] overflow-y-auto">
     <div className="max-w-3xl mx-auto p-4 md:p-10">
-      <button onClick={onClose} className="mb-6 text-amber-400 hover:text-amber-200 flex items-center gap-1.5 text-xs font-bold transition"><X size={16} /> Close Memorial View</button>
+      <button onClick={onClose} className="mb-6 text-amber-400 hover:text-amber-200 flex items-center gap-1.5 text-xs font-bold transition cursor-pointer"><X size={16} /> Close Memorial View</button>
       <div className="bg-white rounded-3xl shadow-2xl overflow-hidden border border-amber-950/20">
         <div className="bg-gradient-to-r from-[#1C0F0A] to-[#2A1810] text-white p-8 text-center border-b-4 border-amber-500">
           <TripleMLogo className="w-16 h-16 mx-auto mb-4" />
@@ -619,7 +619,7 @@ const EulogyGeneratorModal = ({ isOpen, onClose, addToast }: { isOpen: boolean; 
                 <p className="text-[10px] text-amber-400 uppercase tracking-wider font-semibold">Burial Memorialization</p>
               </div>
             </div>
-            <button onClick={onClose} className="p-2 rounded-full hover:bg-white/10 transition"><X size={18} /></button>
+            <button onClick={onClose} className="p-2 rounded-full hover:bg-white/10 transition cursor-pointer"><X size={18} /></button>
           </div>
 
           {step === 'input' ? (
@@ -634,7 +634,7 @@ const EulogyGeneratorModal = ({ isOpen, onClose, addToast }: { isOpen: boolean; 
                   {photos.map((p, i) => (
                     <div key={i} className="relative aspect-square rounded-xl overflow-hidden border border-stone-200 group">
                       <img src={p} className="w-full h-full object-cover" alt="" />
-                      <button type="button" onClick={() => setPhotos(photos.filter((_, idx) => idx !== i))} className="absolute top-1 right-1 bg-rose-600 text-white p-1 rounded-full opacity-0 group-hover:opacity-100 transition"><X size={10} /></button>
+                      <button type="button" onClick={() => setPhotos(photos.filter((_, idx) => idx !== i))} className="absolute top-1 right-1 bg-rose-600 text-white p-1 rounded-full opacity-0 group-hover:opacity-100 transition cursor-pointer"><X size={10} /></button>
                     </div>
                   ))}
                   {photos.length < 6 && (
@@ -666,7 +666,7 @@ const EulogyGeneratorModal = ({ isOpen, onClose, addToast }: { isOpen: boolean; 
                 </div>
                 <div>
                   <label className="block text-[10px] font-bold uppercase text-stone-500 tracking-wider mb-1">Relationship Role</label>
-                  <select value={formData.relationship} onChange={e => setFormData({ ...formData, relationship: e.target.value })} className="w-full text-xs p-3 border border-stone-200 bg-white rounded-xl text-stone-850">
+                  <select value={formData.relationship} onChange={e => setFormData({ ...formData, relationship: e.target.value })} className="w-full text-xs p-3 border border-stone-200 bg-white rounded-xl text-stone-850 cursor-pointer">
                     <option value="father">Beloved Father</option>
                     <option value="mother">Beloved Mother</option>
                     <option value="husband">Loving Husband</option>
@@ -678,7 +678,7 @@ const EulogyGeneratorModal = ({ isOpen, onClose, addToast }: { isOpen: boolean; 
                 </div>
                 <div>
                   <label className="block text-[10px] font-bold uppercase text-stone-500 tracking-wider mb-1">Faith / Rite Framework</label>
-                  <select value={formData.faith} onChange={e => setFormData({ ...formData, faith: e.target.value })} className="w-full text-xs p-3 border border-stone-200 bg-white rounded-xl text-stone-850">
+                  <select value={formData.faith} onChange={e => setFormData({ ...formData, faith: e.target.value })} className="w-full text-xs p-3 border border-stone-200 bg-white rounded-xl text-stone-850 cursor-pointer">
                     <option value="Christian">Christian (Protestant)</option>
                     <option value="Catholic">Roman Catholic</option>
                     <option value="Muslim">Islamic Tradition</option>
@@ -688,7 +688,7 @@ const EulogyGeneratorModal = ({ isOpen, onClose, addToast }: { isOpen: boolean; 
                 </div>
                 <div>
                   <label className="block text-[10px] font-bold uppercase text-stone-500 tracking-wider mb-1">Prose Tone</label>
-                  <select value={formData.tone} onChange={e => setFormData({ ...formData, tone: e.target.value })} className="w-full text-xs p-3 border border-stone-200 bg-white rounded-xl text-stone-850">
+                  <select value={formData.tone} onChange={e => setFormData({ ...formData, tone: e.target.value })} className="w-full text-xs p-3 border border-stone-200 bg-white rounded-xl text-stone-850 cursor-pointer">
                     <option value="warm">Warm & Poetic</option>
                     <option value="celebratory">Celebratory & Vibrant</option>
                     <option value="formal">Traditional & Formal</option>
@@ -716,8 +716,8 @@ const EulogyGeneratorModal = ({ isOpen, onClose, addToast }: { isOpen: boolean; 
               </div>
 
               <div className="flex justify-end gap-3 pt-4 border-t border-stone-100">
-                <button type="button" onClick={onClose} className="px-5 py-2.5 text-xs font-bold text-stone-500 rounded-xl hover:bg-stone-50 transition">Cancel</button>
-                <button type="submit" disabled={generating} className="px-6 py-3 text-xs font-black bg-amber-500 hover:bg-amber-400 text-stone-950 rounded-xl flex items-center gap-2 shadow-md transition disabled:opacity-50">
+                <button type="button" onClick={onClose} className="px-5 py-2.5 text-xs font-bold text-stone-500 rounded-xl hover:bg-stone-50 transition cursor-pointer">Cancel</button>
+                <button type="submit" disabled={generating} className="px-6 py-3 text-xs font-black bg-amber-500 hover:bg-amber-400 text-stone-950 rounded-xl flex items-center gap-2 shadow-md transition disabled:opacity-50 cursor-pointer">
                   {generating ? 'Composing...' : <><Sparkles size={14} /> Generate & Publish</>}
                 </button>
               </div>
@@ -740,10 +740,10 @@ const EulogyGeneratorModal = ({ isOpen, onClose, addToast }: { isOpen: boolean; 
               </div>
 
               <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                <button onClick={() => setShowMemorialPreview(true)} className="p-4 rounded-2xl border border-stone-200 bg-stone-50 hover:bg-white font-bold text-xs flex flex-col items-center gap-2 transition text-stone-700 shadow-sm"><Eye size={18} className="text-amber-600" /> Preview Page</button>
-                <button onClick={handlePrintQR} className="p-4 rounded-2xl border border-stone-200 bg-stone-50 hover:bg-white font-bold text-xs flex flex-col items-center gap-2 transition text-stone-700 shadow-sm"><Printer size={18} className="text-amber-600" /> Print QR Sheet</button>
-                <button onClick={() => { navigator.clipboard.writeText(memorialUrl); addToast('URL Copied!', 'success'); }} className="p-4 rounded-2xl border border-stone-200 bg-stone-50 hover:bg-white font-bold text-xs flex flex-col items-center gap-2 transition text-stone-700 shadow-sm"><Share2 size={18} className="text-amber-600" /> Copy Link</button>
-                <button onClick={() => { navigator.clipboard.writeText(eulogy); setCopied(true); addToast('Eulogy text copied', 'info'); setTimeout(() => setCopied(false), 2000); }} className="p-4 rounded-2xl border border-stone-200 bg-stone-50 hover:bg-white font-bold text-xs flex flex-col items-center gap-2 transition text-stone-700 shadow-sm"><Copy size={18} className="text-amber-600" /> {copied ? 'Copied' : 'Copy Eulogy'}</button>
+                <button onClick={() => setShowMemorialPreview(true)} className="p-4 rounded-2xl border border-stone-200 bg-stone-50 hover:bg-white font-bold text-xs flex flex-col items-center gap-2 transition text-stone-700 shadow-sm cursor-pointer"><Eye size={18} className="text-amber-600" /> Preview Page</button>
+                <button onClick={handlePrintQR} className="p-4 rounded-2xl border border-stone-200 bg-stone-50 hover:bg-white font-bold text-xs flex flex-col items-center gap-2 transition text-stone-700 shadow-sm cursor-pointer"><Printer size={18} className="text-amber-600" /> Print QR Sheet</button>
+                <button onClick={() => { navigator.clipboard.writeText(memorialUrl); addToast('URL Copied!', 'success'); }} className="p-4 rounded-2xl border border-stone-200 bg-stone-50 hover:bg-white font-bold text-xs flex flex-col items-center gap-2 transition text-stone-700 shadow-sm cursor-pointer"><Share2 size={18} className="text-amber-600" /> Copy Link</button>
+                <button onClick={() => { navigator.clipboard.writeText(eulogy); setCopied(true); addToast('Eulogy text copied', 'info'); setTimeout(() => setCopied(false), 2000); }} className="p-4 rounded-2xl border border-stone-200 bg-stone-50 hover:bg-white font-bold text-xs flex flex-col items-center gap-2 transition text-stone-700 shadow-sm cursor-pointer"><Copy size={18} className="text-amber-600" /> {copied ? 'Copied' : 'Copy Eulogy'}</button>
               </div>
 
               <div className="bg-stone-50 border border-stone-200 rounded-2xl p-5 max-h-48 overflow-y-auto text-[11px] text-stone-600 leading-relaxed whitespace-pre-wrap font-serif">
@@ -751,8 +751,8 @@ const EulogyGeneratorModal = ({ isOpen, onClose, addToast }: { isOpen: boolean; 
               </div>
 
               <div className="flex justify-between items-center pt-4 border-t border-stone-100">
-                <button onClick={handleReset} className="text-xs font-bold text-amber-700 hover:text-amber-500 flex items-center gap-1 transition"><PenTool size={14} /> Compose Another</button>
-                <button onClick={onClose} className="px-6 py-3 text-xs font-bold bg-[#1C0F0A] hover:bg-stone-850 text-amber-100 rounded-xl transition">Close</button>
+                <button onClick={handleReset} className="text-xs font-bold text-amber-700 hover:text-amber-500 flex items-center gap-1 transition cursor-pointer"><PenTool size={14} /> Compose Another</button>
+                <button onClick={onClose} className="px-6 py-3 text-xs font-bold bg-[#1C0F0A] hover:bg-stone-850 text-amber-100 rounded-xl transition cursor-pointer">Close</button>
               </div>
             </div>
           )}
@@ -817,10 +817,10 @@ const ClientWebsite = ({ onEnterAdmin, onEnterFamily, theme, onToggleTheme, addT
             <a href="#services" className="hover:text-amber-500 transition">Services</a>
             <a href="#fleet" className="hover:text-amber-500 transition">Fleet</a>
             <a href="#catalog" className="hover:text-amber-500 transition">Caskets</a>
-            <button onClick={() => setIsEulogyOpen(true)} className="bg-amber-500 hover:bg-amber-400 text-stone-950 text-xs font-black px-4 py-2.5 rounded-full flex items-center gap-1.5 transition shadow-sm"><Feather size={14} /> AI Memorial</button>
-            <button onClick={onEnterFamily} className="text-amber-600 border border-amber-500/40 bg-amber-500/5 hover:bg-amber-500/10 text-xs font-black px-4 py-2.5 rounded-full flex items-center gap-1.5 transition"><UserIcon size={14} /> Family Portal</button>
-            <button onClick={onEnterAdmin} className="text-stone-500 border border-stone-300 bg-stone-100 hover:bg-stone-200 text-xs font-bold px-4 py-2.5 rounded-full flex items-center gap-1.5 transition"><Lock size={14} /> Admin Access</button>
-            <button onClick={onToggleTheme} className={`p-2.5 rounded-full border transition ${isDark ? 'border-amber-900 text-amber-300 bg-amber-950/20' : 'border-stone-200 text-stone-600 bg-stone-50'}`}>{isDark ? <Sun size={14} /> : <Moon size={14} />}</button>
+            <button onClick={() => setIsEulogyOpen(true)} className="bg-amber-500 hover:bg-amber-400 text-stone-950 text-xs font-black px-4 py-2.5 rounded-full flex items-center gap-1.5 transition shadow-sm cursor-pointer"><Feather size={14} /> AI Memorial</button>
+            <button onClick={onEnterFamily} className="text-amber-600 border border-amber-500/40 bg-amber-500/5 hover:bg-amber-500/10 text-xs font-black px-4 py-2.5 rounded-full flex items-center gap-1.5 transition cursor-pointer"><UserIcon size={14} /> Family Portal</button>
+            <button onClick={onEnterAdmin} className="text-stone-500 border border-stone-300 bg-stone-100 hover:bg-stone-200 text-xs font-bold px-4 py-2.5 rounded-full flex items-center gap-1.5 transition cursor-pointer"><Lock size={14} /> Admin Access</button>
+            <button onClick={onToggleTheme} className={`p-2.5 rounded-full border transition cursor-pointer ${isDark ? 'border-amber-900 text-amber-300 bg-amber-950/20' : 'border-stone-200 text-stone-600 bg-stone-50'}`}>{isDark ? <Sun size={14} /> : <Moon size={14} />}</button>
           </nav>
         </div>
       </header>
@@ -831,8 +831,8 @@ const ClientWebsite = ({ onEnterAdmin, onEnterFamily, theme, onToggleTheme, addT
         <h2 className="text-4xl md:text-6xl font-serif font-extrabold tracking-tight mb-6">Honoring Precious Lives with<br /><span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-200 via-amber-400 to-amber-100">Dignity, Serenity & Absolute Respect</span></h2>
         <p className="text-stone-300 max-w-2xl mx-auto mb-10 text-sm md:text-base leading-relaxed">Let us handle the details. Create customized service arrangements, draft itemized transport routes, select robust caskets, and generate instant remembrance sites with guests QR codes.</p>
         <div className="flex justify-center gap-4 flex-wrap">
-          <button onClick={onEnterFamily} className="bg-amber-500 hover:bg-amber-400 text-stone-950 px-8 py-4 rounded-full font-black text-xs uppercase tracking-wider transition duration-300 transform hover:-translate-y-0.5 shadow-lg flex items-center gap-2">Plan Service & Get Quote <RightArrow size={14} /></button>
-          <button onClick={() => setIsEulogyOpen(true)} className="bg-transparent border border-white/30 hover:bg-white/10 text-white px-8 py-4 rounded-full font-black text-xs uppercase tracking-wider transition">Create AI Memorial Page</button>
+          <button onClick={onEnterFamily} className="bg-amber-500 hover:bg-amber-400 text-stone-950 px-8 py-4 rounded-full font-black text-xs uppercase tracking-wider transition duration-300 transform hover:-translate-y-0.5 shadow-lg flex items-center gap-2 cursor-pointer">Plan Service & Get Quote <RightArrow size={14} /></button>
+          <button onClick={() => setIsEulogyOpen(true)} className="bg-transparent border border-white/30 hover:bg-white/10 text-white px-8 py-4 rounded-full font-black text-xs uppercase tracking-wider transition cursor-pointer">Create AI Memorial Page</button>
         </div>
       </section>
 
@@ -914,8 +914,8 @@ const ClientWebsite = ({ onEnterAdmin, onEnterFamily, theme, onToggleTheme, addT
             <p>© {new Date().getFullYear()} Triple M Funeral Services Nakuru-Subukia. All Rights Reserved.</p>
           </div>
           <div className="flex gap-6">
-            <button onClick={onEnterFamily} className="text-amber-400 hover:text-white flex items-center gap-1 transition"><UserIcon size={14}/> Family Portal</button>
-            <button onClick={onEnterAdmin} className="text-stone-500 hover:text-white flex items-center gap-1 transition"><Lock size={14}/> Staff Portal</button>
+            <button onClick={onEnterFamily} className="text-amber-400 hover:text-white flex items-center gap-1 transition cursor-pointer"><UserIcon size={14}/> Family Portal</button>
+            <button onClick={onEnterAdmin} className="text-stone-500 hover:text-white flex items-center gap-1 transition cursor-pointer"><Lock size={14}/> Staff Portal</button>
           </div>
         </div>
       </footer>
@@ -928,7 +928,21 @@ const ClientWebsite = ({ onEnterAdmin, onEnterFamily, theme, onToggleTheme, addT
 // ============================================================================
 const FamilyPortal = ({ onBack, theme, addToast }: any) => {
   const isDark = theme === 'dark';
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  
+  // Check if profile exists locally
+  const [isLoggedIn, setIsLoggedIn] = useState(() => {
+    return !!localStorage.getItem('triplem_family_profile');
+  });
+  
+  const [activeProfile, setActiveProfile] = useState<{ firstName: string; lastName: string; email: string; phone: string } | null>(() => {
+    try {
+      const p = localStorage.getItem('triplem_family_profile');
+      return p ? JSON.parse(p) : null;
+    } catch {
+      return null;
+    }
+  });
+
   const [loadingAction, setLoadingAction] = useState<string | null>(null);
   const [portalTab, setPortalTab] = useState<'overview' | 'planner' | 'payments'>('overview');
   
@@ -1038,12 +1052,13 @@ const FamilyPortal = ({ onBack, theme, addToast }: any) => {
     setLoadingAction('form');
     setTimeout(() => {
       const profile = {
-        firstName: familyAuth.firstName || 'Family',
-        lastName: familyAuth.lastName || 'Representative',
+        firstName: familyAuth.firstName || familyAuth.email.split('@')[0],
+        lastName: familyAuth.lastName || 'Client',
         email: familyAuth.email,
         phone: familyAuth.phone,
       };
       localStorage.setItem('triplem_family_profile', JSON.stringify(profile));
+      setActiveProfile(profile);
       setIsLoggedIn(true);
       setLoadingAction(null);
       addToast(authMode === 'register' ? 'Family account registered successfully!' : 'Signed in successfully!', 'success');
@@ -1054,16 +1069,25 @@ const FamilyPortal = ({ onBack, theme, addToast }: any) => {
   const handleSocialLogin = (provider: string) => {
     setLoadingAction(provider);
     setTimeout(() => {
-      localStorage.setItem('triplem_family_profile', JSON.stringify({
+      const profile = {
         firstName: provider === 'Google' ? 'Google' : 'Facebook',
         lastName: 'Client',
         email: provider === 'Google' ? 'family.google@example.com' : 'family.facebook@example.com',
         phone: '0722000111',
-      }));
+      };
+      localStorage.setItem('triplem_family_profile', JSON.stringify(profile));
+      setActiveProfile(profile);
       setIsLoggedIn(true);
       setLoadingAction(null);
       addToast(`Authenticated via ${provider}`, 'success');
     }, 1000);
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem('triplem_family_profile');
+    setActiveProfile(null);
+    setIsLoggedIn(false);
+    addToast('Logged out of portal', 'info');
   };
 
   const handleReceiptSubmit = (e: React.FormEvent) => {
@@ -1113,9 +1137,15 @@ const FamilyPortal = ({ onBack, theme, addToast }: any) => {
       localStorage.setItem('triplem_saved_transport', JSON.stringify(fullTransport));
     }
     
+    const clientFullName = activeProfile ? `${activeProfile.firstName} ${activeProfile.lastName}` : 'John Kamau';
+    const clientPhone = activeProfile ? activeProfile.phone : '0722123456';
+
     const activeBookings = getLocalData<Booking[]>('bookings', INITIAL_BOOKINGS);
-    const familyBooking = activeBookings.find(b => b.bookingNumber === 'BK-24-9982');
+    let familyBooking = activeBookings.find(b => b.bookingNumber === 'BK-24-9982');
+    
     if (familyBooking) {
+      familyBooking.clientName = clientFullName;
+      familyBooking.contactPhone = clientPhone;
       familyBooking.totalQuote = liveTotal;
       familyBooking.casketName = selectedCasket ? selectedCasket.name : 'Custom Selection';
       familyBooking.hearseName = selectedHearse ? selectedHearse.vehicleName : 'Custom Logistics';
@@ -1133,28 +1163,50 @@ const FamilyPortal = ({ onBack, theme, addToast }: any) => {
         plannerForm.floralPreset !== 'none' ? `Florals (${plannerForm.floralPreset})` : '',
         plannerForm.hasPallbearers ? 'Pallbearers squad' : ''
       ].filter(Boolean);
-      
-      setLocalData('bookings', activeBookings);
-      window.dispatchEvent(new Event('storage'));
+    } else {
+      familyBooking = {
+        id: generateId('BKG'),
+        bookingNumber: 'BK-24-9982',
+        clientName: clientFullName,
+        contactPhone: clientPhone,
+        burialDate: plannerForm.burialDate || 'TBD',
+        casketName: selectedCasket ? selectedCasket.name : 'Custom Selection',
+        hearseName: selectedHearse ? selectedHearse.vehicleName : 'Custom Logistics',
+        selectedServices: ['Hearse Transport', 'Directorship'],
+        totalQuote: liveTotal,
+        amountPaid: verifiedPaid,
+        status: 'CONFIRMED',
+        transport: liveTransport ? {
+          ...liveTransport,
+          morgue: { name: plannerForm.morgueName, town: plannerForm.morgueTown, distanceKm: plannerForm.morgueDistance },
+          ceremony: { name: plannerForm.ceremonyName, town: plannerForm.ceremonyTown, distanceKm: plannerForm.ceremonyDistance },
+          restingPlace: { name: plannerForm.restingName, town: plannerForm.restingTown, distanceKm: plannerForm.restingDistance }
+        } : undefined
+      };
+      activeBookings.push(familyBooking);
     }
+    
+    setLocalData('bookings', activeBookings);
+    window.dispatchEvent(new Event('storage'));
     
     setPortalTab('overview');
     addToast('Service arrangement confirmed and saved!', 'success');
   };
 
+  // --- STRICT UNCONDITIONAL AUTH SCREEN GUARD ---
   if (!isLoggedIn) {
     return (
-      <div className={`min-h-screen flex flex-col items-center justify-center p-4 relative ${isDark ? 'bg-[#150B07]' : 'bg-[#FDFBF7]'}`}>
-        <button onClick={onBack} className="absolute top-8 left-8 text-amber-500 hover:text-amber-400 flex items-center gap-2 font-bold text-xs transition">
+      <div className={`min-h-screen flex flex-col items-center justify-center p-4 relative font-sans ${isDark ? 'bg-[#150B07]' : 'bg-[#FDFBF7]'}`}>
+        <button onClick={onBack} className="absolute top-8 left-8 text-amber-500 hover:text-amber-400 flex items-center gap-2 font-bold text-xs transition cursor-pointer">
           <ChevronLeft size={16} /> Home Website
         </button>
 
         <div className={`rounded-3xl shadow-2xl border w-full max-w-md overflow-hidden ${isDark ? 'bg-[#1C0F0A] border-amber-950/40 text-stone-200' : 'bg-white border-stone-200'}`}>
           <div className="p-8 text-center border-b border-stone-100/10">
             <TripleMLogo className="w-16 h-16 mx-auto mb-4" />
-            <h2 className={`text-xl font-bold font-serif ${isDark ? 'text-amber-100' : 'text-[#2A1810]'}`}>Family Portal</h2>
+            <h2 className={`text-xl font-bold font-serif ${isDark ? 'text-amber-100' : 'text-[#2A1810]'}`}>Secure Family Console</h2>
             <p className="text-[10px] text-stone-400 mt-1 uppercase tracking-widest font-semibold">
-              Register / login to plan burial logistics
+              Register or sign in to manage burial arrangements
             </p>
           </div>
 
@@ -1163,14 +1215,14 @@ const FamilyPortal = ({ onBack, theme, addToast }: any) => {
               <button
                 type="button"
                 onClick={() => setAuthMode('register')}
-                className={`flex-1 py-2 rounded-lg transition ${authMode === 'register' ? 'bg-amber-500 text-stone-950 shadow-sm font-black' : 'text-stone-500'}`}
+                className={`flex-1 py-2 rounded-lg transition cursor-pointer ${authMode === 'register' ? 'bg-amber-500 text-stone-950 shadow-sm font-black' : 'text-stone-500'}`}
               >
                 Create Account
               </button>
               <button
                 type="button"
                 onClick={() => setAuthMode('login')}
-                className={`flex-1 py-2 rounded-lg transition ${authMode === 'login' ? 'bg-amber-500 text-stone-950 shadow-sm font-black' : 'text-stone-500'}`}
+                className={`flex-1 py-2 rounded-lg transition cursor-pointer ${authMode === 'login' ? 'bg-amber-500 text-stone-950 shadow-sm font-black' : 'text-stone-500'}`}
               >
                 Sign In
               </button>
@@ -1181,14 +1233,14 @@ const FamilyPortal = ({ onBack, theme, addToast }: any) => {
                 <div className="grid grid-cols-2 gap-2">
                   <input
                     required
-                    placeholder="First name *"
+                    placeholder="First Name *"
                     value={familyAuth.firstName}
                     onChange={e => setFamilyAuth({ ...familyAuth, firstName: e.target.value })}
                     className="text-xs p-3 border border-stone-200 rounded-xl bg-white text-stone-800 outline-none focus:border-amber-500"
                   />
                   <input
                     required
-                    placeholder="Last name *"
+                    placeholder="Last Name *"
                     value={familyAuth.lastName}
                     onChange={e => setFamilyAuth({ ...familyAuth, lastName: e.target.value })}
                     className="text-xs p-3 border border-stone-200 rounded-xl bg-white text-stone-800 outline-none focus:border-amber-500"
@@ -1199,23 +1251,16 @@ const FamilyPortal = ({ onBack, theme, addToast }: any) => {
               <input
                 required
                 type="email"
-                placeholder="Email address *"
+                placeholder="Email Address *"
                 value={familyAuth.email}
                 onChange={e => setFamilyAuth({ ...familyAuth, email: e.target.value })}
                 className="w-full text-xs p-3 border border-stone-200 rounded-xl bg-white text-stone-800 outline-none focus:border-amber-500"
               />
               <input
                 required
-                placeholder="Phone (M-Pesa Number) *"
+                placeholder="M-Pesa Phone Number *"
                 value={familyAuth.phone}
                 onChange={e => setFamilyAuth({ ...familyAuth, phone: e.target.value })}
-                className="w-full text-xs p-3 border border-stone-200 rounded-xl bg-white text-stone-800 outline-none focus:border-amber-500"
-              />
-              <input
-                type="password"
-                placeholder="Password (optional for demo)"
-                value={familyAuth.password}
-                onChange={e => setFamilyAuth({ ...familyAuth, password: e.target.value })}
                 className="w-full text-xs p-3 border border-stone-200 rounded-xl bg-white text-stone-800 outline-none focus:border-amber-500"
               />
 
@@ -1225,7 +1270,7 @@ const FamilyPortal = ({ onBack, theme, addToast }: any) => {
                 className="w-full bg-amber-500 hover:bg-amber-400 text-stone-950 font-black py-3.5 rounded-xl text-xs uppercase tracking-wider transition shadow-md cursor-pointer"
               >
                 {loadingAction === 'form'
-                  ? 'Please wait...'
+                  ? 'Processing...'
                   : authMode === 'register'
                     ? 'Create Family Account'
                     : 'Sign In to Portal'}
@@ -1234,14 +1279,14 @@ const FamilyPortal = ({ onBack, theme, addToast }: any) => {
 
             <div className="relative py-2">
               <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-stone-200" /></div>
-              <div className="relative flex justify-center text-[10px] uppercase"><span className="bg-white px-2 text-stone-400">Or continue with</span></div>
+              <div className="relative flex justify-center text-[10px] uppercase"><span className="bg-white px-2 text-stone-400">Or continue with demo</span></div>
             </div>
 
             <button
               type="button"
               onClick={() => handleSocialLogin('Google')}
               disabled={loadingAction !== null}
-              className="w-full flex items-center justify-center gap-3 border border-stone-300 hover:bg-stone-50 font-bold text-xs py-3.5 rounded-xl transition cursor-pointer"
+              className="w-full flex items-center justify-center gap-3 border border-stone-300 hover:bg-stone-50 font-bold text-xs py-3 rounded-xl transition cursor-pointer"
             >
               {loadingAction === 'Google' ? <div className="animate-spin h-4 w-4 border-2 border-amber-500 border-t-transparent rounded-full" /> : <GoogleIcon />}
               Continue with Google (Demo)
@@ -1251,7 +1296,7 @@ const FamilyPortal = ({ onBack, theme, addToast }: any) => {
               type="button"
               onClick={() => handleSocialLogin('Facebook')}
               disabled={loadingAction !== null}
-              className="w-full flex items-center justify-center gap-3 bg-[#1877F2] hover:bg-[#166FE5] text-white font-bold text-xs py-3.5 rounded-xl transition cursor-pointer"
+              className="w-full flex items-center justify-center gap-3 bg-[#1877F2] hover:bg-[#166FE5] text-white font-bold text-xs py-3 rounded-xl transition cursor-pointer"
             >
               {loadingAction === 'Facebook' ? <div className="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full" /> : <FacebookIcon />}
               Continue with Facebook (Demo)
@@ -1262,13 +1307,17 @@ const FamilyPortal = ({ onBack, theme, addToast }: any) => {
     );
   }
 
+  // --- LOGGED IN DASHBOARD VIEW ---
+  const activeClientName = activeProfile ? `${activeProfile.firstName} ${activeProfile.lastName}` : 'John Kamau';
+  const activeClientPhone = activeProfile ? activeProfile.phone : '0722123456';
+
   return (
     <div className={`min-h-screen font-sans ${isDark ? 'bg-[#110905] text-stone-200' : 'bg-[#F9F7F3] text-stone-800'}`}>
       <EulogyGeneratorModal isOpen={isEulogyOpen} onClose={() => setIsEulogyOpen(false)} addToast={addToast} />
       {showTransportInvoice && savedTransport && (
         <TransportInvoiceModal 
           transport={savedTransport} 
-          clientName="John Kamau" 
+          clientName={activeClientName} 
           bookingNumber="BK-24-9982" 
           onClose={() => setShowTransportInvoice(false)} 
         />
@@ -1279,10 +1328,12 @@ const FamilyPortal = ({ onBack, theme, addToast }: any) => {
           <TripleMLogo className="w-9 h-9" />
           <div>
             <h1 className="font-serif font-bold text-base">Triple M Family Console</h1>
-            <p className="text-[9px] uppercase font-bold text-amber-500">Service Reference: BK-24-9982</p>
+            <p className="text-[9px] uppercase font-bold text-amber-500 flex items-center gap-1.5 mt-0.5">
+              <UserCheck size={11} /> Billed To: {activeClientName} ({activeClientPhone})
+            </p>
           </div>
         </div>
-        <button onClick={() => { setIsLoggedIn(false); addToast('Logged out of portal', 'info'); }} className="flex items-center gap-1.5 text-xs font-extrabold text-stone-400 hover:text-rose-500 transition cursor-pointer"><LogOut size={15} /> Exit Portal</button>
+        <button onClick={handleLogout} className="flex items-center gap-1.5 text-xs font-extrabold text-stone-400 hover:text-rose-500 transition cursor-pointer"><LogOut size={15} /> Exit Portal</button>
       </header>
 
       <main className="max-w-6xl mx-auto p-6 md:p-8 space-y-8">
@@ -1602,7 +1653,7 @@ const FamilyPortal = ({ onBack, theme, addToast }: any) => {
                   <h3 className="font-serif text-base font-bold">7. Uniformed Pallbearer Squad</h3>
                   <p className="text-xs text-stone-400 mt-0.5">Six professionally trained pallbearers in uniform.</p>
                 </div>
-                <input type="checkbox" checked={plannerForm.hasPallbearers} onChange={e => setPlannerForm({...plannerForm, hasPallbearers: e.target.checked})} className="h-5 w-5 rounded border-stone-300 text-amber-600 focus:ring-amber-500" />
+                <input type="checkbox" checked={plannerForm.hasPallbearers} onChange={e => setPlannerForm({...plannerForm, hasPallbearers: e.target.checked})} className="h-5 w-5 rounded border-stone-300 text-amber-600 focus:ring-amber-500 cursor-pointer" />
               </div>
             </div>
 
@@ -1725,105 +1776,6 @@ const FamilyPortal = ({ onBack, theme, addToast }: any) => {
           </div>
         )}
       </main>
-    ) : (
-      <div className="max-w-md mx-auto my-20 p-8 rounded-3xl border border-stone-200 bg-white text-slate-800 shadow-2xl space-y-6 text-center">
-        <TripleMLogo className="w-16 h-16 mx-auto" />
-        <h2 className="font-serif text-xl font-bold">Secure Family Console</h2>
-        <p className="text-xs text-stone-400 leading-relaxed">Create a family profile or sign in to calculate transport routes and confirm service arrangements.</p>
-        
-        <div className="space-y-4 text-left">
-          <div className="flex bg-stone-100 rounded-xl p-1 text-xs font-bold">
-            <button
-              type="button"
-              onClick={() => setAuthMode('register')}
-              className={`flex-1 py-2 rounded-lg transition cursor-pointer ${authMode === 'register' ? 'bg-amber-500 text-stone-950 font-black shadow-sm' : 'text-stone-500'}`}
-            >
-              Create Account
-            </button>
-            <button
-              type="button"
-              onClick={() => setAuthMode('login')}
-              className={`flex-1 py-2 rounded-lg transition cursor-pointer ${authMode === 'login' ? 'bg-amber-500 text-stone-950 font-black shadow-sm' : 'text-stone-500'}`}
-            >
-              Sign In
-            </button>
-          </div>
-
-          <form onSubmit={handleFamilyAuthSubmit} className="space-y-3">
-            {authMode === 'register' && (
-              <div className="grid grid-cols-2 gap-2">
-                <input
-                  required
-                  placeholder="First Name *"
-                  value={familyAuth.firstName}
-                  onChange={e => setFamilyAuth({ ...familyAuth, firstName: e.target.value })}
-                  className="text-xs p-3 border border-stone-200 rounded-xl bg-white text-stone-800 outline-none focus:border-amber-500"
-                />
-                <input
-                  required
-                  placeholder="Last Name *"
-                  value={familyAuth.lastName}
-                  onChange={e => setFamilyAuth({ ...familyAuth, lastName: e.target.value })}
-                  className="text-xs p-3 border border-stone-200 rounded-xl bg-white text-stone-800 outline-none focus:border-amber-500"
-                />
-              </div>
-            )}
-
-            <input
-              required
-              type="email"
-              placeholder="Email Address *"
-              value={familyAuth.email}
-              onChange={e => setFamilyAuth({ ...familyAuth, email: e.target.value })}
-              className="w-full text-xs p-3 border border-stone-200 rounded-xl bg-white text-stone-800 outline-none focus:border-amber-500"
-            />
-            <input
-              required
-              placeholder="M-Pesa Phone Number *"
-              value={familyAuth.phone}
-              onChange={e => setFamilyAuth({ ...familyAuth, phone: e.target.value })}
-              className="w-full text-xs p-3 border border-stone-200 rounded-xl bg-white text-stone-800 outline-none focus:border-amber-500"
-            />
-
-            <button
-              type="submit"
-              disabled={loadingAction !== null}
-              className="w-full bg-amber-500 hover:bg-amber-400 text-stone-950 font-black py-3.5 rounded-xl text-xs uppercase tracking-wider transition shadow-md cursor-pointer"
-            >
-              {loadingAction === 'form'
-                ? 'Processing...'
-                : authMode === 'register'
-                  ? 'Create Family Account'
-                  : 'Sign In to Portal'}
-            </button>
-          </form>
-
-          <div className="relative py-2">
-            <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-stone-200" /></div>
-            <div className="relative flex justify-center text-[10px] uppercase"><span className="bg-white px-2 text-stone-400">Or continue with demo</span></div>
-          </div>
-
-          <button
-            type="button"
-            onClick={() => handleSocialLogin('Google')}
-            disabled={loadingAction !== null}
-            className="w-full flex items-center justify-center gap-3 border border-stone-300 hover:bg-stone-50 font-bold text-xs py-3 rounded-xl transition cursor-pointer"
-          >
-            {loadingAction === 'Google' ? <div className="animate-spin h-4 w-4 border-2 border-amber-500 border-t-transparent rounded-full" /> : <GoogleIcon />}
-            Continue with Google (Demo)
-          </button>
-
-          <button
-            type="button"
-            onClick={() => handleSocialLogin('Facebook')}
-            disabled={loadingAction !== null}
-            className="w-full flex items-center justify-center gap-3 bg-[#1877F2] hover:bg-[#166FE5] text-white font-bold text-xs py-3 rounded-xl transition cursor-pointer"
-          >
-            {loadingAction === 'Facebook' ? <div className="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full" /> : <FacebookIcon />}
-            Continue with Facebook (Demo)
-          </button>
-        </div>
-      </div>
     </div>
   );
 };
