@@ -1,14 +1,15 @@
+// @ts-nocheck
 import React, { useEffect, useState } from 'react';
 import {
   Car, Package, Plus, X, Lock, LogOut, ChevronLeft, Sparkles, Sun, Moon,
   Calculator, CheckCircle2, ChevronRight as RightArrow, Flower2, ArrowDownCircle,
-  Camera, LayoutDashboard, Trash2, UploadCloud, ZoomIn, Feather,
+  Camera, LayoutDashboard, Trash2, UploadCloud, Feather,
   PenTool, Copy, Share2, Eye, ImagePlus, Printer, FileText,
-  User as UserIcon, DollarSign, Clock, AlertTriangle, Check, Search, Filter, RefreshCw,
-  MapPin, Navigation, Route, Building2
+  User as UserIcon, DollarSign, Clock, AlertTriangle, Check, Search, RefreshCw,
+  MapPin, Navigation, Route
 } from 'lucide-react';
 
-const API = (import.meta as any).env.VITE_API_URL || 'http://localhost:4000';
+const API = import.meta.env.VITE_API_URL || 'http://localhost:4000';
 
 function mediaSrc(url?: string | null) {
   if (!url) return '';
@@ -72,7 +73,7 @@ interface Booking { id: string; bookingNumber: string; clientName: string; conta
 interface Memorial { id: string; fullName: string; age: string; dates: string; photos: string[]; eulogy: string; faith: string; relationship: string; tone: string; survivedBy: string; createdAt: string; }
 interface PaymentReceipt { id: string; amount: number; referenceNumber: string; date: string; status: 'PENDING_APPROVAL' | 'VERIFIED' | 'REJECTED'; note?: string; }
 
-// --- GLOBAL NAVIGATION CONFIGURATION ---
+// --- GLOBAL SHARED CONFIGURATIONS ---
 const nav = [
   { id: 'dashboard', icon: LayoutDashboard, label: 'Analytics' },
   { id: 'inventory', icon: Package, label: 'Caskets' },
@@ -97,8 +98,8 @@ const INITIAL_HEARSES: Hearse[] = [
 
 const REGIONAL_MORGUE_PRESETS = [
   { name: 'Nakuru County PGH Mortuary', town: 'Nakuru CBD', distanceKm: 42 },
-  { name: 'Umash Funeral Home', town: 'Nakuru CBD', distanceKm: 45 },
   { name: 'Subukia Sub-County Hospital Mortuary', town: 'Subukia Town', distanceKm: 4 },
+  { name: 'Umash Funeral Home', town: 'Nakuru CBD', distanceKm: 45 },
   { name: 'Nyahururu County Referral Hospital Morgue', town: 'Nyahururu', distanceKm: 48 },
   { name: 'Lee Funeral Home', town: 'Nairobi', distanceKm: 185 },
 ];
@@ -159,7 +160,6 @@ function setLocalData<T>(key: string, data: T) {
   }
 }
 
-// --- TRANSPORT INVOICE CALCULATOR ---
 function calculateDetailedLogistics(
   morgueDist: number,
   ceremonyDist: number,
@@ -189,9 +189,6 @@ function calculateDetailedLogistics(
   };
 }
 
-// ============================================================================
-// SYSTEM TOAST HELPER
-// ============================================================================
 const Toast = ({ message, type, onClose }: { message: string; type: 'success' | 'error' | 'info'; onClose: () => void }) => {
   useEffect(() => {
     const timer = setTimeout(onClose, 4000);
@@ -208,9 +205,6 @@ const Toast = ({ message, type, onClose }: { message: string; type: 'success' | 
   );
 };
 
-// ============================================================================
-// LOGISTICS INVOICE VIEWER & PRINT ENGINE
-// ============================================================================
 const TransportInvoiceModal = ({ transport, clientName, bookingNumber, onClose }: { transport: TransportPlan; clientName: string; bookingNumber: string; onClose: () => void }) => {
   const handlePrint = () => {
     const w = window.open('', '_blank');
@@ -390,9 +384,6 @@ const TransportInvoiceModal = ({ transport, clientName, bookingNumber, onClose }
   );
 };
 
-// ============================================================================
-// IMAGE LIGHTBOX
-// ============================================================================
 const ImageLightbox = ({ media, onClose }: { media: { url: string; title: string; subtitle?: string } | null; onClose: () => void }) => {
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose(); };
@@ -418,9 +409,6 @@ const ImageLightbox = ({ media, onClose }: { media: { url: string; title: string
   );
 };
 
-// ============================================================================
-// PUBLIC MEMORIAL PAGE VIEWER
-// ============================================================================
 const MemorialPageViewer = ({ memorial, onClose }: { memorial: Memorial; onClose: () => void }) => (
   <div className="fixed inset-0 z-[90] bg-gradient-to-br from-[#2A1810] via-[#1C0F0A] to-[#110905] overflow-y-auto">
     <div className="max-w-3xl mx-auto p-4 md:p-10">
@@ -459,9 +447,6 @@ const MemorialPageViewer = ({ memorial, onClose }: { memorial: Memorial; onClose
   </div>
 );
 
-// ============================================================================
-// AI EULOGY GENERATION ENGINE
-// ============================================================================
 function generateEulogyText(data: {
   fullName: string; age: string; relationship: string; personality: string;
   achievements: string; hobbies: string; survivedBy: string; faith: string; tone: string;
@@ -518,9 +503,6 @@ const QRCodeDisplay = ({ value, size = 180 }: { value: string; size?: number }) 
   );
 };
 
-// ============================================================================
-// AI EULOGY COMPOSER & MEMORIAL GENERATOR
-// ============================================================================
 const EulogyGeneratorModal = ({ isOpen, onClose, addToast }: { isOpen: boolean; onClose: () => void; addToast: (msg: string, type: 'success' | 'error' | 'info') => void }) => {
   const [step, setStep] = useState<'input' | 'result'>('input');
   const [generating, setGenerating] = useState(false);
@@ -942,9 +924,9 @@ const ClientWebsite = ({ onEnterAdmin, onEnterFamily, theme, onToggleTheme, addT
 };
 
 // ============================================================================
-// FAMILY PORTAL VIEW
+// FAMILY / CLIENT INTERACTIVE PLANNING PORTAL
 // ============================================================================
-const StaffPortal = ({ onBack: _onBack, theme, addToast }: any) => {
+const FamilyPortal = ({ onBack, theme, addToast }: any) => {
   const isDark = theme === 'dark';
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [loadingAction, setLoadingAction] = useState<string | null>(null);
@@ -958,6 +940,17 @@ const StaffPortal = ({ onBack: _onBack, theme, addToast }: any) => {
   const [receipts, setReceipts] = useState<PaymentReceipt[]>([]);
   const [newReceipt, setNewReceipt] = useState({ ref: '', amt: '', note: '' });
 
+  // Account Authentication Form States
+  const [authMode, setAuthMode] = useState<'login' | 'register'>('register');
+  const [familyAuth, setFamilyAuth] = useState({
+    firstName: '',
+    lastName: '',
+    email: '',
+    phone: '',
+    password: '',
+  });
+
+  // Planner Form States
   const [plannerForm, setPlannerForm] = useState({
     casketId: '',
     hearseId: '',
@@ -1030,13 +1023,47 @@ const StaffPortal = ({ onBack: _onBack, theme, addToast }: any) => {
   const livePallbearerPrice = plannerForm.hasPallbearers ? 12000 : 0;
   const liveTotal = baseCost + liveCasketPrice + liveTransportCost + liveGearPrice + liveFloralPrice + livePallbearerPrice;
 
-  const handleLogin = (provider: string) => {
+  // Form Registration & Login Handler
+  const handleFamilyAuthSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!familyAuth.email || !familyAuth.phone) {
+      addToast('Email address and M-Pesa phone number are required', 'error');
+      return;
+    }
+    if (authMode === 'register' && (!familyAuth.firstName || !familyAuth.lastName)) {
+      addToast('Please enter your full name', 'error');
+      return;
+    }
+
+    setLoadingAction('form');
+    setTimeout(() => {
+      const profile = {
+        firstName: familyAuth.firstName || 'Family',
+        lastName: familyAuth.lastName || 'Representative',
+        email: familyAuth.email,
+        phone: familyAuth.phone,
+      };
+      localStorage.setItem('triplem_family_profile', JSON.stringify(profile));
+      setIsLoggedIn(true);
+      setLoadingAction(null);
+      addToast(authMode === 'register' ? 'Family account registered successfully!' : 'Signed in successfully!', 'success');
+    }, 800);
+  };
+
+  // Mock Social Media Auth Handlers
+  const handleSocialLogin = (provider: string) => {
     setLoadingAction(provider);
-    setTimeout(() => { 
-      setIsLoggedIn(true); 
-      setLoadingAction(null); 
-      addToast('Authenticated into family portal', 'success');
-    }, 1200);
+    setTimeout(() => {
+      localStorage.setItem('triplem_family_profile', JSON.stringify({
+        firstName: provider === 'Google' ? 'Google' : 'Facebook',
+        lastName: 'Client',
+        email: provider === 'Google' ? 'family.google@example.com' : 'family.facebook@example.com',
+        phone: '0722000111',
+      }));
+      setIsLoggedIn(true);
+      setLoadingAction(null);
+      addToast(`Authenticated via ${provider}`, 'success');
+    }, 1000);
   };
 
   const handleReceiptSubmit = (e: React.FormEvent) => {
@@ -1115,6 +1142,126 @@ const StaffPortal = ({ onBack: _onBack, theme, addToast }: any) => {
     addToast('Service arrangement confirmed and saved!', 'success');
   };
 
+  if (!isLoggedIn) {
+    return (
+      <div className={`min-h-screen flex flex-col items-center justify-center p-4 relative ${isDark ? 'bg-[#150B07]' : 'bg-[#FDFBF7]'}`}>
+        <button onClick={onBack} className="absolute top-8 left-8 text-amber-500 hover:text-amber-400 flex items-center gap-2 font-bold text-xs transition">
+          <ChevronLeft size={16} /> Home Website
+        </button>
+
+        <div className={`rounded-3xl shadow-2xl border w-full max-w-md overflow-hidden ${isDark ? 'bg-[#1C0F0A] border-amber-950/40 text-stone-200' : 'bg-white border-stone-200'}`}>
+          <div className="p-8 text-center border-b border-stone-100/10">
+            <TripleMLogo className="w-16 h-16 mx-auto mb-4" />
+            <h2 className={`text-xl font-bold font-serif ${isDark ? 'text-amber-100' : 'text-[#2A1810]'}`}>Family Portal</h2>
+            <p className="text-[10px] text-stone-400 mt-1 uppercase tracking-widest font-semibold">
+              Register / login to plan burial logistics
+            </p>
+          </div>
+
+          <div className="p-6 space-y-4">
+            <div className="flex bg-stone-100 rounded-xl p-1 text-xs font-bold">
+              <button
+                type="button"
+                onClick={() => setAuthMode('register')}
+                className={`flex-1 py-2 rounded-lg transition ${authMode === 'register' ? 'bg-amber-500 text-stone-950 shadow-sm font-black' : 'text-stone-500'}`}
+              >
+                Create Account
+              </button>
+              <button
+                type="button"
+                onClick={() => setAuthMode('login')}
+                className={`flex-1 py-2 rounded-lg transition ${authMode === 'login' ? 'bg-amber-500 text-stone-950 shadow-sm font-black' : 'text-stone-500'}`}
+              >
+                Sign In
+              </button>
+            </div>
+
+            <form onSubmit={handleFamilyAuthSubmit} className="space-y-3">
+              {authMode === 'register' && (
+                <div className="grid grid-cols-2 gap-2">
+                  <input
+                    required
+                    placeholder="First name *"
+                    value={familyAuth.firstName}
+                    onChange={e => setFamilyAuth({ ...familyAuth, firstName: e.target.value })}
+                    className="text-xs p-3 border border-stone-200 rounded-xl bg-white text-stone-800 outline-none focus:border-amber-500"
+                  />
+                  <input
+                    required
+                    placeholder="Last name *"
+                    value={familyAuth.lastName}
+                    onChange={e => setFamilyAuth({ ...familyAuth, lastName: e.target.value })}
+                    className="text-xs p-3 border border-stone-200 rounded-xl bg-white text-stone-800 outline-none focus:border-amber-500"
+                  />
+                </div>
+              )}
+
+              <input
+                required
+                type="email"
+                placeholder="Email address *"
+                value={familyAuth.email}
+                onChange={e => setFamilyAuth({ ...familyAuth, email: e.target.value })}
+                className="w-full text-xs p-3 border border-stone-200 rounded-xl bg-white text-stone-800 outline-none focus:border-amber-500"
+              />
+              <input
+                required
+                placeholder="Phone (M-Pesa Number) *"
+                value={familyAuth.phone}
+                onChange={e => setFamilyAuth({ ...familyAuth, phone: e.target.value })}
+                className="w-full text-xs p-3 border border-stone-200 rounded-xl bg-white text-stone-800 outline-none focus:border-amber-500"
+              />
+              <input
+                type="password"
+                placeholder="Password (optional for demo)"
+                value={familyAuth.password}
+                onChange={e => setFamilyAuth({ ...familyAuth, password: e.target.value })}
+                className="w-full text-xs p-3 border border-stone-200 rounded-xl bg-white text-stone-800 outline-none focus:border-amber-500"
+              />
+
+              <button
+                type="submit"
+                disabled={loadingAction !== null}
+                className="w-full bg-amber-500 hover:bg-amber-400 text-stone-950 font-black py-3.5 rounded-xl text-xs uppercase tracking-wider transition shadow-md cursor-pointer"
+              >
+                {loadingAction === 'form'
+                  ? 'Please wait...'
+                  : authMode === 'register'
+                    ? 'Create Family Account'
+                    : 'Sign In to Portal'}
+              </button>
+            </form>
+
+            <div className="relative py-2">
+              <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-stone-200" /></div>
+              <div className="relative flex justify-center text-[10px] uppercase"><span className="bg-white px-2 text-stone-400">Or continue with</span></div>
+            </div>
+
+            <button
+              type="button"
+              onClick={() => handleSocialLogin('Google')}
+              disabled={loadingAction !== null}
+              className="w-full flex items-center justify-center gap-3 border border-stone-300 hover:bg-stone-50 font-bold text-xs py-3.5 rounded-xl transition cursor-pointer"
+            >
+              {loadingAction === 'Google' ? <div className="animate-spin h-4 w-4 border-2 border-amber-500 border-t-transparent rounded-full" /> : <GoogleIcon />}
+              Continue with Google (Demo)
+            </button>
+
+            <button
+              type="button"
+              onClick={() => handleSocialLogin('Facebook')}
+              disabled={loadingAction !== null}
+              className="w-full flex items-center justify-center gap-3 bg-[#1877F2] hover:bg-[#166FE5] text-white font-bold text-xs py-3.5 rounded-xl transition cursor-pointer"
+            >
+              {loadingAction === 'Facebook' ? <div className="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full" /> : <FacebookIcon />}
+              Continue with Facebook (Demo)
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className={`min-h-screen font-sans ${isDark ? 'bg-[#110905] text-stone-200' : 'bg-[#F9F7F3] text-stone-800'}`}>
       <EulogyGeneratorModal isOpen={isEulogyOpen} onClose={() => setIsEulogyOpen(false)} addToast={addToast} />
@@ -1135,469 +1282,551 @@ const StaffPortal = ({ onBack: _onBack, theme, addToast }: any) => {
             <p className="text-[9px] uppercase font-bold text-amber-500">Service Reference: BK-24-9982</p>
           </div>
         </div>
-        <button onClick={() => { setIsLoggedIn(false); addToast('Logged out of portal', 'info'); }} className="flex items-center gap-1.5 text-xs font-extrabold text-stone-400 hover:text-rose-500 transition"><LogOut size={15} /> Exit Portal</button>
+        <button onClick={() => { setIsLoggedIn(false); addToast('Logged out of portal', 'info'); }} className="flex items-center gap-1.5 text-xs font-extrabold text-stone-400 hover:text-rose-500 transition cursor-pointer"><LogOut size={15} /> Exit Portal</button>
       </header>
 
-      {isLoggedIn ? (
-        <main className="max-w-6xl mx-auto p-6 md:p-8 space-y-8">
-          <div className="flex border-b border-stone-200/40 gap-6 overflow-x-auto">
-            <button onClick={() => setPortalTab('overview')} className={`pb-3 text-xs font-black uppercase tracking-wider transition whitespace-nowrap ${portalTab === 'overview' ? 'border-b-2 border-amber-500 text-amber-500' : 'text-stone-400 border-b-2 border-transparent'}`}>Overview & Tracker</button>
-            <button onClick={() => setPortalTab('planner')} className={`pb-3 text-xs font-black uppercase tracking-wider transition whitespace-nowrap ${portalTab === 'planner' ? 'border-b-2 border-amber-500 text-amber-500' : 'text-stone-400 border-b-2 border-transparent'}`}>Arrangement Planner</button>
-            <button onClick={() => setPortalTab('payments')} className={`pb-3 text-xs font-black uppercase tracking-wider transition whitespace-nowrap ${portalTab === 'payments' ? 'border-b-2 border-amber-500 text-amber-500' : 'text-stone-400 border-b-2 border-transparent'}`}>M-Pesa Receipts ({receipts.length})</button>
-          </div>
+      <main className="max-w-6xl mx-auto p-6 md:p-8 space-y-8">
+        <div className="flex border-b border-stone-200/40 gap-6 overflow-x-auto">
+          <button onClick={() => setPortalTab('overview')} className={`pb-3 text-xs font-black uppercase tracking-wider transition whitespace-nowrap cursor-pointer ${portalTab === 'overview' ? 'border-b-2 border-amber-500 text-amber-500' : 'text-stone-400 border-b-2 border-transparent'}`}>Overview & Tracker</button>
+          <button onClick={() => setPortalTab('planner')} className={`pb-3 text-xs font-black uppercase tracking-wider transition whitespace-nowrap cursor-pointer ${portalTab === 'planner' ? 'border-b-2 border-amber-500 text-amber-500' : 'text-stone-400 border-b-2 border-transparent'}`}>Arrangement Planner</button>
+          <button onClick={() => setPortalTab('payments')} className={`pb-3 text-xs font-black uppercase tracking-wider transition whitespace-nowrap cursor-pointer ${portalTab === 'payments' ? 'border-b-2 border-amber-500 text-amber-500' : 'text-stone-400 border-b-2 border-transparent'}`}>M-Pesa Receipts ({receipts.length})</button>
+        </div>
 
-          {portalTab === 'overview' && (
-            <div className="space-y-6">
-              <div className="grid md:grid-cols-3 gap-6">
-                <div className={`p-6 rounded-2xl border flex items-center justify-between ${isDark ? 'bg-[#1C0F0A] border-amber-950/40' : 'bg-white border-stone-200 shadow-sm'}`}>
-                  <div>
-                    <div className="text-[10px] uppercase font-bold tracking-wider text-stone-400">Total Setup Quote</div>
-                    <div className="text-xl font-black mt-1">KES {totalCost.toLocaleString()}</div>
-                  </div>
-                  <DollarSign className="text-amber-500/80" size={28} />
-                </div>
-                <div className={`p-6 rounded-2xl border flex items-center justify-between ${isDark ? 'bg-[#1C0F0A] border-amber-950/40' : 'bg-white border-stone-200 shadow-sm'}`}>
-                  <div>
-                    <div className="text-[10px] uppercase font-bold tracking-wider text-stone-400">Total Validated Payments</div>
-                    <div className="text-xl font-black mt-1 text-emerald-600">KES {verifiedPaid.toLocaleString()}</div>
-                  </div>
-                  <CheckCircle2 className="text-emerald-500/80" size={28} />
-                </div>
-                <div className={`p-6 rounded-2xl border flex items-center justify-between ${isDark ? 'bg-[#1C0F0A] border-amber-950/40' : 'bg-white border-stone-200 shadow-sm'}`}>
-                  <div>
-                    <div className="text-[10px] uppercase font-bold tracking-wider text-stone-400">Pending Balance</div>
-                    <div className="text-xl font-black text-rose-600 mt-1">KES {balanceDue.toLocaleString()}</div>
-                  </div>
-                  <AlertTriangle className="text-rose-500/80" size={28} />
-                </div>
-              </div>
-
-              {/* TRANSPORT LOGISTICS PREVIEW CARD */}
-              {savedTransport && (
-                <div className={`p-6 rounded-3xl border ${isDark ? 'bg-gradient-to-br from-[#2A1810] to-[#1C0F0A] border-amber-500/30' : 'bg-gradient-to-br from-amber-50 to-white border-amber-300 shadow-sm'}`}>
-                  <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
-                    <div className="flex items-center gap-3">
-                      <div className={`w-12 h-12 rounded-2xl flex items-center justify-center ${isDark ? 'bg-amber-500/20 border border-amber-500/30' : 'bg-amber-500 text-white shadow-sm'}`}>
-                        <Route size={22} className={isDark ? 'text-amber-400' : ''} />
-                      </div>
-                      <div>
-                        <h3 className={`font-serif text-base font-bold ${isDark ? 'text-amber-100' : 'text-amber-900'}`}>Transport Logistics Confirmed</h3>
-                        <p className={`text-xs mt-0.5 ${isDark ? 'text-amber-400/70' : 'text-amber-700'}`}>Detailed loop structure saved.</p>
-                      </div>
-                    </div>
-                    <button onClick={() => setShowTransportInvoice(true)} className="bg-amber-500 hover:bg-amber-400 text-stone-950 font-black px-4 py-2.5 rounded-xl text-xs uppercase tracking-wider transition shadow-md flex items-center gap-2 whitespace-nowrap self-start md:self-center"><FileText size={14}/> Open Logistical Invoice</button>
-                  </div>
-
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-4">
-                    <div className={`p-3 rounded-xl ${isDark ? 'bg-stone-900/60 border border-amber-950/40' : 'bg-white border border-amber-100 shadow-sm'}`}>
-                      <div className="flex items-center gap-2 mb-1">
-                        <div className="w-5 h-5 rounded-full bg-amber-500 text-stone-950 flex items-center justify-center font-black text-[9px]">1</div>
-                        <span className={`text-[9px] uppercase font-black tracking-wider ${isDark ? 'text-amber-400/80' : 'text-amber-700'}`}>Morgue Base Point</span>
-                      </div>
-                      <p className={`text-xs font-bold ${isDark ? 'text-amber-100' : 'text-stone-800'}`}>{savedTransport.morgue.name}</p>
-                      <p className="text-[10px] text-stone-400">{savedTransport.morgue.town} • {savedTransport.morgue.distanceKm} KM</p>
-                    </div>
-                    <div className={`p-3 rounded-xl ${isDark ? 'bg-stone-900/60 border border-amber-950/40' : 'bg-white border border-amber-100 shadow-sm'}`}>
-                      <div className="flex items-center gap-2 mb-1">
-                        <div className="w-5 h-5 rounded-full bg-amber-500 text-stone-950 flex items-center justify-center font-black text-[9px]">2</div>
-                        <span className={`text-[9px] uppercase font-black tracking-wider ${isDark ? 'text-amber-400/80' : 'text-amber-700'}`}>Ceremony Point</span>
-                      </div>
-                      <p className={`text-xs font-bold ${isDark ? 'text-amber-100' : 'text-stone-800'}`}>{savedTransport.ceremony.name}</p>
-                      <p className="text-[10px] text-stone-400">{savedTransport.ceremony.town} • {savedTransport.ceremony.distanceKm} KM</p>
-                    </div>
-                    <div className={`p-3 rounded-xl ${isDark ? 'bg-stone-900/60 border border-amber-950/40' : 'bg-white border border-amber-100 shadow-sm'}`}>
-                      <div className="flex items-center gap-2 mb-1">
-                        <div className="w-5 h-5 rounded-full bg-[#1C0F0A] text-amber-300 flex items-center justify-center font-black text-[9px]">3</div>
-                        <span className={`text-[9px] uppercase font-black tracking-wider ${isDark ? 'text-amber-400/80' : 'text-amber-700'}`}>Resting Place</span>
-                      </div>
-                      <p className={`text-xs font-bold ${isDark ? 'text-amber-100' : 'text-stone-800'}`}>{savedTransport.restingPlace.name}</p>
-                      <p className="text-[10px] text-stone-400">{savedTransport.restingPlace.town} • {savedTransport.restingPlace.distanceKm} KM</p>
-                    </div>
-                  </div>
-
-                  <div className={`flex justify-between items-center p-3 rounded-xl ${isDark ? 'bg-stone-900/60' : 'bg-white/80'}`}>
-                    <div className="flex items-center gap-2 text-xs">
-                      <Navigation size={14} className={isDark ? 'text-amber-400' : 'text-amber-600'} />
-                      <span className={`font-bold ${isDark ? 'text-amber-100' : 'text-stone-700'}`}>Total Mileage Loop: {savedTransport.totalKm} KM</span>
-                    </div>
-                    <div className="text-right">
-                      <p className={`text-[10px] uppercase font-bold ${isDark ? 'text-stone-500' : 'text-stone-400'}`}>Transport Charge</p>
-                      <p className={`font-black text-base ${isDark ? 'text-amber-300' : 'text-amber-700'}`}>KES {savedTransport.totalTransportCost.toLocaleString()}</p>
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              <div className={`p-6 md:p-8 rounded-3xl border space-y-6 ${isDark ? 'bg-[#1C0F0A] border-amber-950/40' : 'bg-white border-stone-200 shadow-sm'}`}>
-                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
-                  <div>
-                    <h3 className="font-serif text-lg font-bold">Arrangement Milestone Progress</h3>
-                    <p className="text-xs text-stone-400 mt-0.5">Real-time status trackers as scheduled dates approach.</p>
-                  </div>
-                  <button onClick={() => setPortalTab('planner')} className="text-xs font-bold text-amber-500 flex items-center gap-1 border border-amber-500/30 px-3 py-1.5 rounded-lg hover:bg-amber-500/5 transition">
-                    Modify Selections
-                  </button>
-                </div>
-                
-                <div className="grid md:grid-cols-4 gap-4">
-                  {[
-                    { title: '1. Deposit Settle', desc: 'Secure base services contract.', complete: verifiedPaid > 0 },
-                    { title: '2. Route Verified', desc: 'Specify Morgue, Ceremony & Resting Place.', complete: !!savedTransport },
-                    { title: '3. Driver Dispatch', desc: 'Allocation and technical review of hearse.', complete: false },
-                    { title: '4. Graveside Setup', desc: 'Lowering gear delivery and installation.', complete: false }
-                  ].map((st, i) => (
-                    <div key={i} className={`p-4 rounded-xl border ${st.complete ? (isDark ? 'border-emerald-500/30 bg-emerald-950/10' : 'border-emerald-500/30 bg-emerald-50') : (isDark ? 'border-stone-800 bg-stone-900/30' : 'border-stone-200 bg-stone-50')}`}>
-                      <div className="flex justify-between items-center mb-2">
-                        <span className="text-[9px] uppercase font-bold tracking-wider text-stone-400">Step {i+1}</span>
-                        {st.complete ? <CheckCircle2 size={16} className="text-emerald-600" /> : <Clock size={16} className="text-stone-400" />}
-                      </div>
-                      <h4 className="font-bold text-xs">{st.title}</h4>
-                      <p className="text-[10px] text-stone-500 mt-1 leading-normal">{st.desc}</p>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-          )}
-
-          {portalTab === 'planner' && (
-            <div className="flex flex-col lg:flex-row gap-8 items-start">
-              <div className="flex-1 space-y-6">
-                {/* 1. Date */}
-                <div className={`p-6 rounded-3xl border ${isDark ? 'bg-[#1C0F0A] border-amber-950/40' : 'bg-white border-stone-200'}`}>
-                  <h3 className="font-serif text-base font-bold mb-3">1. Select Scheduled Date</h3>
-                  <input type="date" value={plannerForm.burialDate} onChange={e => setPlannerForm({...plannerForm, burialDate: e.target.value})} className={`w-full max-w-sm p-3 border border-stone-200 rounded-xl text-xs bg-white ${isDark ? 'text-stone-800' : ''}`} />
-                </div>
-
-                {/* 2. Transport Route planning */}
-                <div className={`p-6 rounded-3xl border-2 ${isDark ? 'bg-gradient-to-br from-[#2A1810] to-[#1C0F0A] border-amber-500/40' : 'bg-gradient-to-br from-amber-50/80 to-white border-amber-300'}`}>
-                  <div className="flex items-center gap-3 mb-4">
-                    <div className={`w-10 h-10 rounded-2xl flex items-center justify-center ${isDark ? 'bg-amber-500/20 border border-amber-500/30' : 'bg-amber-500 text-white shadow-sm'}`}>
-                      <Route size={18} className={isDark ? 'text-amber-400' : ''} />
-                    </div>
-                    <div>
-                      <h3 className={`font-serif text-base font-bold ${isDark ? 'text-amber-100' : 'text-amber-900'}`}>2. Transport Route Planning</h3>
-                      <p className={`text-xs mt-0.5 ${isDark ? 'text-amber-400/70' : 'text-amber-700'}`}>Input route milestones to compile custom hearse mileage metrics.</p>
-                    </div>
-                  </div>
-
-                  {/* Morgue Input */}
-                  <div className="space-y-2 mb-5">
-                    <div className="flex items-center gap-2 mb-2">
-                      <div className="w-6 h-6 rounded-full bg-amber-500 text-stone-950 flex items-center justify-center font-black text-[10px] shadow-sm">1</div>
-                      <label className={`text-xs font-black uppercase tracking-wider ${isDark ? 'text-amber-100' : 'text-amber-900'}`}>Deceased Collection Point (Morgue)</label>
-                    </div>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
-                      <input placeholder="Morgue Name *" value={plannerForm.morgueName} onChange={e => setPlannerForm({...plannerForm, morgueName: e.target.value})} className={`text-xs p-3 border rounded-xl ${isDark ? 'bg-stone-900 border-stone-700 text-stone-200' : 'bg-white border-amber-200 text-stone-800'}`} />
-                      <input placeholder="Town / Area" value={plannerForm.morgueTown} onChange={e => setPlannerForm({...plannerForm, morgueTown: e.target.value})} className={`text-xs p-3 border rounded-xl ${isDark ? 'bg-stone-900 border-stone-700 text-stone-200' : 'bg-white border-amber-200 text-stone-800'}`} />
-                      <input type="number" placeholder="Distance from Hub (KM)" value={plannerForm.morgueDistance || ''} onChange={e => setPlannerForm({...plannerForm, morgueDistance: Number(e.target.value)})} className={`text-xs p-3 border rounded-xl ${isDark ? 'bg-stone-900 border-stone-700 text-stone-200' : 'bg-white border-amber-200 text-stone-800'}`} />
-                    </div>
-                    <div>
-                      <p className={`text-[10px] uppercase font-bold mb-1.5 mt-2 ${isDark ? 'text-amber-400/60' : 'text-amber-800'}`}>Regional Presets:</p>
-                      <div className="flex flex-wrap gap-1.5">
-                        {REGIONAL_MORGUE_PRESETS.map((m, i) => (
-                          <button type="button" key={i} onClick={() => applyLocationPreset('morgue', m)} className={`text-[10px] px-2.5 py-1.5 rounded-lg font-bold transition ${plannerForm.morgueName === m.name ? 'bg-amber-500 text-stone-950 shadow-sm font-black' : (isDark ? 'bg-stone-900 text-amber-300 border border-stone-700 hover:border-amber-500' : 'bg-white text-amber-800 border border-amber-200 hover:border-amber-500')}`}>{m.name} <span className="opacity-60">({m.distanceKm} KM)</span></button>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Ceremony Input */}
-                  <div className="space-y-2 mb-5">
-                    <div className="flex items-center gap-2 mb-2">
-                      <div className="w-6 h-6 rounded-full bg-amber-500 text-stone-950 flex items-center justify-center font-black text-[10px] shadow-sm">2</div>
-                      <label className={`text-xs font-black uppercase tracking-wider ${isDark ? 'text-amber-100' : 'text-amber-900'}`}>Ceremony Service Venue</label>
-                    </div>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
-                      <input placeholder="Ceremony Venue Name *" value={plannerForm.ceremonyName} onChange={e => setPlannerForm({...plannerForm, ceremonyName: e.target.value})} className={`text-xs p-3 border rounded-xl ${isDark ? 'bg-stone-900 border-stone-700 text-stone-200' : 'bg-white border-amber-200 text-stone-800'}`} />
-                      <input placeholder="Town / Area" value={plannerForm.ceremonyTown} onChange={e => setPlannerForm({...plannerForm, ceremonyTown: e.target.value})} className={`text-xs p-3 border rounded-xl ${isDark ? 'bg-stone-900 border-stone-700 text-stone-200' : 'bg-white border-amber-200 text-stone-800'}`} />
-                      <input type="number" placeholder="Distance from Morgue (KM)" value={plannerForm.ceremonyDistance || ''} onChange={e => setPlannerForm({...plannerForm, ceremonyDistance: Number(e.target.value)})} className={`text-xs p-3 border rounded-xl ${isDark ? 'bg-stone-900 border-stone-700 text-stone-200' : 'bg-white border-amber-200 text-stone-800'}`} />
-                    </div>
-                    <div>
-                      <p className={`text-[10px] uppercase font-bold mb-1.5 mt-2 ${isDark ? 'text-amber-400/60' : 'text-amber-800'}`}>Regional Presets:</p>
-                      <div className="flex flex-wrap gap-1.5">
-                        {REGIONAL_CEREMONY_PRESETS.map((v, i) => (
-                          <button type="button" key={i} onClick={() => applyLocationPreset('ceremony', v)} className={`text-[10px] px-2.5 py-1.5 rounded-lg font-bold transition ${plannerForm.ceremonyName === v.name ? 'bg-amber-500 text-stone-950 shadow-sm font-black' : (isDark ? 'bg-stone-900 text-amber-300 border border-stone-700 hover:border-amber-500' : 'bg-white text-amber-800 border border-amber-200 hover:border-amber-500')}`}>{v.name} <span className="opacity-60">({v.distanceKm} KM)</span></button>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Resting Place Input */}
-                  <div className="space-y-2 mb-4">
-                    <div className="flex items-center gap-2 mb-2">
-                      <div className="w-6 h-6 rounded-full bg-[#1C0F0A] text-amber-300 flex items-center justify-center font-black text-[10px] shadow-sm">3</div>
-                      <label className={`text-xs font-black uppercase tracking-wider ${isDark ? 'text-amber-100' : 'text-amber-900'}`}>Final Resting Place (Committal Site)</label>
-                    </div>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
-                      <input placeholder="Cemetery / Home Site Name *" value={plannerForm.restingName} onChange={e => setPlannerForm({...plannerForm, restingName: e.target.value})} className={`text-xs p-3 border rounded-xl ${isDark ? 'bg-stone-900 border-stone-700 text-stone-200' : 'bg-white border-amber-200 text-stone-800'}`} />
-                      <input placeholder="Town / Village" value={plannerForm.restingTown} onChange={e => setPlannerForm({...plannerForm, restingTown: e.target.value})} className={`text-xs p-3 border rounded-xl ${isDark ? 'bg-stone-900 border-stone-700 text-stone-200' : 'bg-white border-amber-200 text-stone-800'}`} />
-                      <input type="number" placeholder="Distance from Ceremony (KM)" value={plannerForm.restingDistance || ''} onChange={e => setPlannerForm({...plannerForm, restingDistance: Number(e.target.value)})} className={`text-xs p-3 border rounded-xl ${isDark ? 'bg-stone-900 border-stone-700 text-stone-200' : 'bg-white border-amber-200 text-stone-800'}`} />
-                    </div>
-                    <div>
-                      <p className={`text-[10px] uppercase font-bold mb-1.5 mt-2 ${isDark ? 'text-amber-400/60' : 'text-amber-800'}`}>Regional Presets:</p>
-                      <div className="flex flex-wrap gap-1.5">
-                        {REGIONAL_RESTING_PRESETS.map((bp, i) => (
-                          <button type="button" key={i} onClick={() => applyLocationPreset('resting', bp)} className={`text-[10px] px-2.5 py-1.5 rounded-lg font-bold transition ${plannerForm.restingName === bp.name ? 'bg-amber-500 text-stone-950 shadow-sm font-black' : (isDark ? 'bg-stone-900 text-amber-300 border border-stone-700 hover:border-amber-500' : 'bg-white text-amber-800 border border-amber-200 hover:border-amber-500')}`}>{bp.name} <span className="opacity-60">({bp.distanceKm} KM)</span></button>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Live calculations */}
-                  {liveTransport && (
-                    <div className={`p-4 rounded-2xl border mt-5 transition ${isDark ? 'bg-stone-950/50 border-amber-500/30' : 'bg-white border-amber-200'}`}>
-                      <div className="flex items-center justify-between mb-3">
-                        <div className="flex items-center gap-2">
-                          <Calculator size={14} className={isDark ? 'text-amber-400' : 'text-amber-600'} />
-                          <span className={`text-[10px] uppercase font-black tracking-wider ${isDark ? 'text-amber-300' : 'text-amber-800'}`}>Transport Cost Calculation</span>
-                        </div>
-                        <span className={`text-[10px] font-bold ${isDark ? 'text-emerald-400' : 'text-emerald-600'}`}>● Real-time Settle Metrics</span>
-                      </div>
-                      <div className={`space-y-1.5 text-xs ${isDark ? 'text-stone-300' : 'text-stone-700'}`}>
-                        <div className="flex justify-between"><span className="opacity-70">Estimated Route Distance (including hub return)</span><span className="font-bold">{liveTransport.totalKm} KM</span></div>
-                        <div className="flex justify-between"><span className="opacity-70">Base Coach Mobilization Dispatch Fee</span><span className="font-bold">KES {liveTransport.baseDispatchFee.toLocaleString()}.00</span></div>
-                        <div className="flex justify-between"><span className="opacity-70">Mileage Fee Surcharge (KES 120 / KM)</span><span className="font-bold">KES {liveTransport.distanceFee.toLocaleString()}.00</span></div>
-                        <div className={`flex justify-between pt-2 border-t mt-2 ${isDark ? 'border-stone-800' : 'border-stone-200'}`}>
-                          <span className="font-black uppercase text-xs">LOGISTICS SUB-TOTAL</span>
-                          <span className={`font-black text-sm ${isDark ? 'text-amber-300' : 'text-amber-700'}`}>KES {liveTransport.totalTransportCost.toLocaleString()}.00</span>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-                </div>
-
-                {/* 3. Choose Casket */}
-                <div className={`p-6 rounded-3xl border ${isDark ? 'bg-[#1C0F0A] border-amber-950/40' : 'bg-white border-stone-200 shadow-sm'}`}>
-                  <div className="flex justify-between items-center mb-4">
-                    <div>
-                      <h3 className="font-serif text-base font-bold">3. Choose Casket Preference</h3>
-                      <p className="text-xs text-stone-400">Directly bound to active workshop inventories.</p>
-                    </div>
-                    {selectedCasket && <span className="text-xs font-bold text-emerald-600 flex items-center gap-1 bg-emerald-50 px-2.5 py-1 rounded-full"><Check size={14}/> Assigned</span>}
-                  </div>
-                  <div className="grid grid-cols-2 gap-4 max-h-72 overflow-y-auto pr-2">
-                    {inventory.map(c => (
-                      <div key={c.id} onClick={() => setPlannerForm({...plannerForm, casketId: c.id})} className={`p-3 rounded-2xl border cursor-pointer transition ${plannerForm.casketId === c.id ? 'border-amber-500 bg-amber-500/15' : 'border-stone-200 hover:bg-stone-50'}`}>
-                        {c.imageUrl ? <img src={mediaSrc(c.imageUrl)} className="h-24 w-full object-cover rounded-xl mb-2" alt={c.name} /> : <div className="h-24 bg-amber-500/10 rounded-xl mb-2 flex justify-center items-center text-amber-500"><Package size={22}/></div>}
-                        <h4 className="font-bold text-xs">{c.name}</h4>
-                        <p className="text-[10px] text-stone-400 mt-0.5">{c.material.replace('_', ' ')} • {c.size}</p>
-                        <p className="text-xs font-black text-amber-600 mt-1.5">KES {Number(c.retailPrice).toLocaleString()}</p>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                {/* 4. Hearse transport coach */}
-                <div className={`p-6 rounded-3xl border ${isDark ? 'bg-[#1C0F0A] border-amber-950/40' : 'bg-white border-stone-200 shadow-sm'}`}>
-                  <div className="flex justify-between items-center mb-4">
-                    <div>
-                      <h3 className="font-serif text-base font-bold">4. Select Hearse Carriage</h3>
-                      <p className="text-xs text-stone-400">Showing vehicles currently free for dispatch.</p>
-                    </div>
-                    {selectedHearse && <span className="text-xs font-bold text-emerald-600 flex items-center gap-1 bg-emerald-50 px-2.5 py-1 rounded-full"><Check size={14}/> Assigned</span>}
-                  </div>
-                  <div className="grid grid-cols-2 gap-4">
-                    {availableHearses.map(h => (
-                      <div key={h.id} onClick={() => setPlannerForm({...plannerForm, hearseId: h.id})} className={`p-3 rounded-2xl border cursor-pointer transition flex items-center gap-3 ${plannerForm.hearseId === h.id ? 'border-amber-500 bg-amber-500/15' : 'border-stone-200 hover:bg-stone-50'}`}>
-                        {h.imageUrl ? <img src={mediaSrc(h.imageUrl)} className="h-14 w-14 object-cover rounded-xl shrink-0" alt="" /> : <div className="h-14 w-14 bg-amber-500/10 rounded-xl flex items-center justify-center text-amber-500 shrink-0"><Car size={16}/></div>}
-                        <div>
-                          <h4 className="font-bold text-xs leading-tight">{h.vehicleName}</h4>
-                          <p className="text-[10px] text-stone-400 font-mono mt-1">{h.licensePlate}</p>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                {/* 5. Lowering Gear */}
-                <div className={`p-6 rounded-3xl border ${isDark ? 'bg-[#1C0F0A] border-amber-950/40' : 'bg-white border-stone-200 shadow-sm'}`}>
-                  <h3 className="font-serif text-base font-bold mb-3">5. Lowering Gear Selection</h3>
-                  <div className="grid grid-cols-3 gap-3">
-                    {[
-                      { id: 'none', label: 'Manual Lowering', desc: 'Direct webbing handles run by family/friends.', price: 'Free' },
-                      { id: 'standard', label: 'Standard Mechanical', desc: 'Secure geared mechanical platform.', price: 'KES 10,000' },
-                      { id: 'premium', label: 'Chrome Auto-Lowering', desc: 'Premium auto mechanical chrome frame.', price: 'KES 25,000' }
-                    ].map(p => (
-                      <div key={p.id} onClick={() => setPlannerForm({...plannerForm, loweringGearPreset: p.id})} className={`p-3 border rounded-2xl cursor-pointer transition flex flex-col justify-between ${plannerForm.loweringGearPreset === p.id ? 'border-amber-500 bg-amber-500/15' : 'border-stone-200 hover:bg-stone-50'}`}>
-                        <div>
-                          <h4 className="font-bold text-xs">{p.label}</h4>
-                          <p className="text-[9px] text-stone-400 mt-1 leading-normal mb-2">{p.desc}</p>
-                        </div>
-                        <span className="text-xs font-black text-amber-600 block">{p.price}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                {/* 6. Floral package selection */}
-                <div className={`p-6 rounded-3xl border ${isDark ? 'bg-[#1C0F0A] border-amber-950/40' : 'bg-white border-stone-200 shadow-sm'}`}>
-                  <h3 className="font-serif text-base font-bold mb-3">6. Select Floral Preset</h3>
-                  <div className="grid grid-cols-3 gap-3">
-                    {[
-                      { id: 'none', label: 'No Floral Plan', desc: 'Family handles arrangements separately.', price: 'Free' },
-                      { id: 'simple', label: 'Simple Wreath', desc: 'Casket top fresh wreath layout.', price: 'KES 5,000' },
-                      { id: 'majestic', label: 'Majestic blanket', desc: 'Premium fresh blanket cover & 4 podium sprays.', price: 'KES 15,000' }
-                    ].map(f => (
-                      <div key={f.id} onClick={() => setPlannerForm({...plannerForm, floralPreset: f.id})} className={`p-3 border rounded-2xl cursor-pointer transition flex flex-col justify-between ${plannerForm.floralPreset === f.id ? 'border-amber-500 bg-amber-500/15' : 'border-stone-200 hover:bg-stone-50'}`}>
-                        <div>
-                          <h4 className="font-bold text-xs">{f.label}</h4>
-                          <p className="text-[9px] text-stone-400 mt-1 leading-normal mb-2">{f.desc}</p>
-                        </div>
-                        <span className="text-xs font-black text-amber-600 block">{f.price}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                {/* 7. Pallbearers */}
-                <div className={`p-6 rounded-3xl border flex items-center justify-between ${isDark ? 'bg-[#1C0F0A] border-amber-950/40' : 'bg-white border-stone-200 shadow-sm'}`}>
-                  <div>
-                    <h3 className="font-serif text-base font-bold">7. Uniformed Pallbearer Squad</h3>
-                    <p className="text-xs text-stone-400 mt-0.5">Six professionally trained pallbearers in uniform.</p>
-                  </div>
-                  <input type="checkbox" checked={plannerForm.hasPallbearers} onChange={e => setPlannerForm({...plannerForm, hasPallbearers: e.target.checked})} className="h-5 w-5 rounded border-stone-300 text-amber-600 focus:ring-amber-500" />
-                </div>
-              </div>
-
-              {/* LIVE QUOTE SUMMARY PANEL */}
-              <div className={`w-full lg:w-80 shrink-0 sticky top-24 rounded-3xl border p-6 shadow-xl ${isDark ? 'bg-[#1C0F0A] border-amber-950/40' : 'bg-white border-stone-200'}`}>
-                <h3 className="font-serif text-base font-bold mb-4 border-b border-stone-200/20 pb-2">Arrangement Cost Summary</h3>
-                
-                <div className="space-y-4 text-xs">
-                  <div className="flex justify-between items-start">
-                    <span className="text-stone-400 font-bold w-28">Director Fees</span>
-                    <div className="text-right">
-                      <div className="font-bold text-stone-600">Base Services</div>
-                      <div className="font-bold text-stone-500 mt-0.5">KES {baseCost.toLocaleString()}.00</div>
-                    </div>
-                  </div>
-
-                  <div className="flex justify-between items-start">
-                    <span className="text-stone-400 font-bold w-28">Selected Casket</span>
-                    <div className="text-right">
-                      <div className="font-bold text-stone-600">{selectedCasket ? selectedCasket.name : 'Unassigned'}</div>
-                      <div className="font-bold text-stone-500 mt-0.5">KES {liveCasketPrice.toLocaleString()}.00</div>
-                    </div>
-                  </div>
-                  
-                  <div className="flex justify-between items-start">
-                    <span className="text-stone-400 font-bold w-28">Hearse Logistics</span>
-                    <div className="text-right">
-                      <div className="font-bold text-stone-600">{liveTransport ? `${liveTransport.totalKm} KM Total Route` : 'Awaiting Locations'}</div>
-                      <div className="font-bold text-amber-600 mt-0.5">KES {liveTransportCost.toLocaleString()}.00</div>
-                    </div>
-                  </div>
-
-                  <div className="flex justify-between items-start">
-                    <span className="text-stone-400 font-bold w-28">Lowering Set</span>
-                    <div className="text-right">
-                      <div className="font-bold text-stone-600 uppercase text-[10px]">{plannerForm.loweringGearPreset}</div>
-                      <div className="font-bold text-stone-500 mt-0.5">KES {liveGearPrice.toLocaleString()}.00</div>
-                    </div>
-                  </div>
-
-                  <div className="flex justify-between items-start">
-                    <span className="text-stone-400 font-bold w-28">Floral Display</span>
-                    <div className="text-right">
-                      <div className="font-bold text-stone-600 uppercase text-[10px]">{plannerForm.floralPreset}</div>
-                      <div className="font-bold text-stone-500 mt-0.5">KES {liveFloralPrice.toLocaleString()}.00</div>
-                    </div>
-                  </div>
-
-                  {plannerForm.hasPallbearers && (
-                    <div className="flex justify-between items-start">
-                      <span className="text-stone-400 font-bold w-28">Pallbearers Squad</span>
-                      <div className="text-right">
-                        <div className="font-bold text-stone-500">KES {livePallbearerPrice.toLocaleString()}.00</div>
-                      </div>
-                    </div>
-                  )}
-                  
-                  <div className="pt-4 border-t border-stone-200/20 flex justify-between items-center text-sm font-bold">
-                    <span>Arranged Total</span>
-                    <span className="text-base text-amber-600">KES {liveTotal.toLocaleString()}.00</span>
-                  </div>
-                </div>
-
-                <button 
-                  onClick={saveArrangementPlan}
-                  disabled={!hasTransportLocations}
-                  className="w-full mt-6 bg-amber-500 hover:bg-amber-400 disabled:bg-stone-300 disabled:cursor-not-allowed text-stone-950 font-black py-3.5 rounded-xl text-xs uppercase tracking-wider transition shadow-lg"
-                >
-                  {hasTransportLocations ? 'Confirm Service Selections' : 'Complete Route Mapping First'}
-                </button>
-                {!hasTransportLocations && (
-                  <p className="text-[10px] text-rose-500 text-center mt-2.5 font-bold">Please specify your Morgue, Ceremony, and Resting Place locations to activate transport pricing.</p>
-                )}
-              </div>
-            </div>
-          )}
-
-          {portalTab === 'payments' && (
-            <div className="grid md:grid-cols-2 gap-8 animate-fade-in text-slate-800">
-              <div className={`rounded-3xl border p-6 md:p-8 space-y-6 ${isDark ? 'bg-[#1C0F0A] border-amber-950/40' : 'bg-white border-stone-200 shadow-sm'}`}>
+        {portalTab === 'overview' && (
+          <div className="space-y-6">
+            <div className="grid md:grid-cols-3 gap-6">
+              <div className={`p-6 rounded-2xl border flex items-center justify-between ${isDark ? 'bg-[#1C0F0A] border-amber-950/40' : 'bg-white border-stone-200 shadow-sm'}`}>
                 <div>
-                  <h3 className="font-serif text-base font-bold text-stone-800">Submit M-Pesa Code</h3>
-                  <p className="text-xs text-stone-400">Validate transaction with reference codes.</p>
+                  <div className="text-[10px] uppercase font-bold tracking-wider text-stone-400">Total Setup Quote</div>
+                  <div className="text-xl font-black mt-1">KES {totalCost.toLocaleString()}</div>
                 </div>
-                <form onSubmit={handleReceiptSubmit} className="space-y-4">
-                  <div>
-                    <label className="block text-[10px] font-bold uppercase text-stone-500 tracking-wider mb-1">Amount Paid (KES) *</label>
-                    <input required type="number" value={newReceipt.amt} onChange={e => setNewReceipt({...newReceipt, amt: e.target.value})} className="w-full text-xs p-3 border border-stone-200 bg-stone-50 rounded-xl focus:bg-white transition" />
+                <DollarSign className="text-amber-500/80" size={28} />
+              </div>
+              <div className={`p-6 rounded-2xl border flex items-center justify-between ${isDark ? 'bg-[#1C0F0A] border-amber-950/40' : 'bg-white border-stone-200 shadow-sm'}`}>
+                <div>
+                  <div className="text-[10px] uppercase font-bold tracking-wider text-stone-400">Total Validated Payments</div>
+                  <div className="text-xl font-black mt-1 text-emerald-600">KES {verifiedPaid.toLocaleString()}</div>
+                </div>
+                <CheckCircle2 className="text-emerald-500/80" size={28} />
+              </div>
+              <div className={`p-6 rounded-2xl border flex items-center justify-between ${isDark ? 'bg-[#1C0F0A] border-amber-950/40' : 'bg-white border-stone-200 shadow-sm'}`}>
+                <div>
+                  <div className="text-[10px] uppercase font-bold tracking-wider text-stone-400">Pending Balance</div>
+                  <div className="text-xl font-black text-rose-600 mt-1">KES {balanceDue.toLocaleString()}</div>
+                </div>
+                <AlertTriangle className="text-rose-500/80" size={28} />
+              </div>
+            </div>
+
+            {/* TRANSPORT LOGISTICS PREVIEW CARD */}
+            {savedTransport && (
+              <div className={`p-6 rounded-3xl border ${isDark ? 'bg-gradient-to-br from-[#2A1810] to-[#1C0F0A] border-amber-500/30' : 'bg-gradient-to-br from-amber-50 to-white border-amber-300 shadow-sm'}`}>
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
+                  <div className="flex items-center gap-3">
+                    <div className={`w-12 h-12 rounded-2xl flex items-center justify-center ${isDark ? 'bg-amber-500/20 border border-amber-500/30' : 'bg-amber-500 text-white shadow-sm'}`}>
+                      <Route size={22} className={isDark ? 'text-amber-400' : ''} />
+                    </div>
+                    <div>
+                      <h3 className={`font-serif text-base font-bold ${isDark ? 'text-amber-100' : 'text-amber-900'}`}>Transport Logistics Confirmed</h3>
+                      <p className={`text-xs mt-0.5 ${isDark ? 'text-amber-400/70' : 'text-amber-700'}`}>Detailed loop structure saved.</p>
+                    </div>
                   </div>
-                  <div>
-                    <label className="block text-[10px] font-bold uppercase text-stone-500 tracking-wider mb-1">M-Pesa Reference Code *</label>
-                    <input required type="text" placeholder="E.g., SDR97G8H2K" value={newReceipt.ref} onChange={e => setNewReceipt({...newReceipt, ref: e.target.value})} className="w-full text-xs p-3 border border-stone-200 bg-stone-50 rounded-xl uppercase font-mono focus:bg-white transition" />
+                  <button onClick={() => setShowTransportInvoice(true)} className="bg-amber-500 hover:bg-amber-400 text-stone-950 font-black px-4 py-2.5 rounded-xl text-xs uppercase tracking-wider transition shadow-md flex items-center gap-2 whitespace-nowrap self-start md:self-center cursor-pointer"><FileText size={14}/> Open Logistical Invoice</button>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-4">
+                  <div className={`p-3 rounded-xl ${isDark ? 'bg-stone-900/60 border border-amber-950/40' : 'bg-white border border-amber-100 shadow-sm'}`}>
+                    <div className="flex items-center gap-2 mb-1">
+                      <div className="w-5 h-5 rounded-full bg-amber-500 text-stone-950 flex items-center justify-center font-black text-[9px]">1</div>
+                      <span className={`text-[9px] uppercase font-black tracking-wider ${isDark ? 'text-amber-400/80' : 'text-amber-700'}`}>Morgue Base Point</span>
+                    </div>
+                    <p className={`text-xs font-bold ${isDark ? 'text-amber-100' : 'text-stone-800'}`}>{savedTransport.morgue.name}</p>
+                    <p className="text-[10px] text-stone-400">{savedTransport.morgue.town} • {savedTransport.morgue.distanceKm} KM</p>
                   </div>
-                  <div>
-                    <label className="block text-[10px] font-bold uppercase text-stone-500 tracking-wider mb-1">Payment Note</label>
-                    <input type="text" placeholder="E.g., Commitment Deposit Part Payment" value={newReceipt.note} onChange={e => setNewReceipt({...newReceipt, note: e.target.value})} className="w-full text-xs p-3 border border-stone-200 bg-stone-50 rounded-xl focus:bg-white transition" />
+                  <div className={`p-3 rounded-xl ${isDark ? 'bg-stone-900/60 border border-amber-950/40' : 'bg-white border border-amber-100 shadow-sm'}`}>
+                    <div className="flex items-center gap-2 mb-1">
+                      <div className="w-5 h-5 rounded-full bg-amber-500 text-stone-950 flex items-center justify-center font-black text-[9px]">2</div>
+                      <span className={`text-[9px] uppercase font-black tracking-wider ${isDark ? 'text-amber-400/80' : 'text-amber-700'}`}>Ceremony Point</span>
+                    </div>
+                    <p className={`text-xs font-bold ${isDark ? 'text-amber-100' : 'text-stone-800'}`}>{savedTransport.ceremony.name}</p>
+                    <p className="text-[10px] text-stone-400">{savedTransport.ceremony.town} • {savedTransport.ceremony.distanceKm} KM</p>
                   </div>
-                  <button type="submit" className="w-full bg-[#1C0F0A] hover:bg-[#2A1810] text-amber-200 font-bold py-3.5 rounded-xl text-xs uppercase tracking-wider transition shadow-sm">Submit Receipt</button>
-                </form>
+                  <div className={`p-3 rounded-xl ${isDark ? 'bg-stone-900/60 border border-amber-950/40' : 'bg-white border border-amber-100 shadow-sm'}`}>
+                    <div className="flex items-center gap-2 mb-1">
+                      <div className="w-5 h-5 rounded-full bg-[#1C0F0A] text-amber-300 flex items-center justify-center font-black text-[9px]">3</div>
+                      <span className={`text-[9px] uppercase font-black tracking-wider ${isDark ? 'text-amber-400/80' : 'text-amber-700'}`}>Resting Place</span>
+                    </div>
+                    <p className={`text-xs font-bold ${isDark ? 'text-amber-100' : 'text-stone-800'}`}>{savedTransport.restingPlace.name}</p>
+                    <p className="text-[10px] text-stone-400">{savedTransport.restingPlace.town} • {savedTransport.restingPlace.distanceKm} KM</p>
+                  </div>
+                </div>
+
+                <div className={`flex justify-between items-center p-3 rounded-xl ${isDark ? 'bg-stone-900/60' : 'bg-white/80'}`}>
+                  <div className="flex items-center gap-2 text-xs">
+                    <Navigation size={14} className={isDark ? 'text-amber-400' : 'text-amber-600'} />
+                    <span className={`font-bold ${isDark ? 'text-amber-100' : 'text-stone-700'}`}>Total Mileage Loop: {savedTransport.totalKm} KM</span>
+                  </div>
+                  <div className="text-right">
+                    <p className={`text-[10px] uppercase font-bold ${isDark ? 'text-stone-500' : 'text-stone-400'}`}>Transport Charge</p>
+                    <p className={`font-black text-base ${isDark ? 'text-amber-300' : 'text-amber-700'}`}>KES {savedTransport.totalTransportCost.toLocaleString()}</p>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            <div className={`p-6 md:p-8 rounded-3xl border space-y-6 ${isDark ? 'bg-[#1C0F0A] border-amber-950/40' : 'bg-white border-stone-200 shadow-sm'}`}>
+              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+                <div>
+                  <h3 className="font-serif text-lg font-bold">Arrangement Milestone Progress</h3>
+                  <p className="text-xs text-stone-400 mt-0.5">Real-time status trackers as scheduled dates approach.</p>
+                </div>
+                <button onClick={() => setPortalTab('planner')} className="text-xs font-bold text-amber-500 flex items-center gap-1 border border-amber-500/30 px-3 py-1.5 rounded-lg hover:bg-amber-500/5 transition cursor-pointer">
+                  Modify Selections
+                </button>
               </div>
               
-              <div className={`rounded-3xl border p-6 md:p-8 space-y-6 ${isDark ? 'bg-[#1C0F0A] border-amber-950/40' : 'bg-white border-stone-200 shadow-sm'}`}>
-                <h3 className="font-serif text-base font-bold text-stone-800">Payment Registry Logs</h3>
-                <div className="space-y-3">
-                  {receipts.length === 0 && <p className="text-xs text-stone-400 py-6 text-center italic">No transaction tickets filed.</p>}
-                  {receipts.map(rec => (
-                    <div key={rec.id} className="p-4 rounded-xl border border-stone-200 bg-stone-50 flex justify-between items-center text-xs shadow-inner">
-                      <div>
-                        <div className="font-mono font-black text-amber-700">{rec.referenceNumber}</div>
-                        <p className="text-[10px] text-stone-400 mt-1">{rec.date} • {rec.note || 'No description note attached'}</p>
+              <div className="grid md:grid-cols-4 gap-4">
+                {[
+                  { title: '1. Deposit Settle', desc: 'Secure base services contract.', complete: verifiedPaid > 0 },
+                  { title: '2. Route Verified', desc: 'Specify Morgue, Ceremony & Resting Place.', complete: !!savedTransport },
+                  { title: '3. Driver Dispatch', desc: 'Allocation and technical review of hearse.', complete: false },
+                  { title: '4. Graveside Setup', desc: 'Lowering gear delivery and installation.', complete: false }
+                ].map((st, i) => (
+                  <div key={i} className={`p-4 rounded-xl border ${st.complete ? (isDark ? 'border-emerald-500/30 bg-emerald-950/10' : 'border-emerald-500/30 bg-emerald-50') : (isDark ? 'border-stone-800 bg-stone-900/30' : 'border-stone-200 bg-stone-50')}`}>
+                    <div className="flex justify-between items-center mb-2">
+                      <span className="text-[9px] uppercase font-bold tracking-wider text-stone-400">Step {i+1}</span>
+                      {st.complete ? <CheckCircle2 size={16} className="text-emerald-600" /> : <Clock size={16} className="text-stone-400" />}
+                    </div>
+                    <h4 className="font-bold text-xs">{st.title}</h4>
+                    <p className="text-[10px] text-stone-500 mt-1 leading-normal">{st.desc}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {portalTab === 'planner' && (
+          <div className="flex flex-col lg:flex-row gap-8 items-start">
+            <div className="flex-1 space-y-6">
+              {/* 1. Date */}
+              <div className={`p-6 rounded-3xl border ${isDark ? 'bg-[#1C0F0A] border-amber-950/40' : 'bg-white border-stone-200'}`}>
+                <h3 className="font-serif text-base font-bold mb-3">1. Select Scheduled Date</h3>
+                <input type="date" value={plannerForm.burialDate} onChange={e => setPlannerForm({...plannerForm, burialDate: e.target.value})} className={`w-full max-w-sm p-3 border border-stone-200 rounded-xl text-xs bg-white ${isDark ? 'text-stone-800' : ''}`} />
+              </div>
+
+              {/* 2. Transport Route planning */}
+              <div className={`p-6 rounded-3xl border-2 ${isDark ? 'bg-gradient-to-br from-[#2A1810] to-[#1C0F0A] border-amber-500/40' : 'bg-gradient-to-br from-amber-50/80 to-white border-amber-300'}`}>
+                <div className="flex items-center gap-3 mb-4">
+                  <div className={`w-10 h-10 rounded-2xl flex items-center justify-center ${isDark ? 'bg-amber-500/20 border border-amber-500/30' : 'bg-amber-500 text-white shadow-sm'}`}>
+                    <Route size={18} className={isDark ? 'text-amber-400' : ''} />
+                  </div>
+                  <div>
+                    <h3 className={`font-serif text-base font-bold ${isDark ? 'text-amber-100' : 'text-amber-900'}`}>2. Transport Route Planning</h3>
+                    <p className={`text-xs mt-0.5 ${isDark ? 'text-amber-400/70' : 'text-amber-700'}`}>Input route milestones to compile custom hearse mileage metrics.</p>
+                  </div>
+                </div>
+
+                {/* Morgue Input */}
+                <div className="space-y-2 mb-5">
+                  <div className="flex items-center gap-2 mb-2">
+                    <div className="w-6 h-6 rounded-full bg-amber-500 text-stone-950 flex items-center justify-center font-black text-[10px] shadow-sm">1</div>
+                    <label className={`text-xs font-black uppercase tracking-wider ${isDark ? 'text-amber-100' : 'text-amber-900'}`}>Deceased Collection Point (Morgue)</label>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
+                    <input placeholder="Morgue Name *" value={plannerForm.morgueName} onChange={e => setPlannerForm({...plannerForm, morgueName: e.target.value})} className={`text-xs p-3 border rounded-xl ${isDark ? 'bg-stone-900 border-stone-700 text-stone-200' : 'bg-white border-amber-200 text-stone-800'}`} />
+                    <input placeholder="Town / Area" value={plannerForm.morgueTown} onChange={e => setPlannerForm({...plannerForm, morgueTown: e.target.value})} className={`text-xs p-3 border rounded-xl ${isDark ? 'bg-stone-900 border-stone-700 text-stone-200' : 'bg-white border-amber-200 text-stone-800'}`} />
+                    <input type="number" placeholder="Distance from Hub (KM)" value={plannerForm.morgueDistance || ''} onChange={e => setPlannerForm({...plannerForm, morgueDistance: Number(e.target.value)})} className={`text-xs p-3 border rounded-xl ${isDark ? 'bg-stone-900 border-stone-700 text-stone-200' : 'bg-white border-amber-200 text-stone-800'}`} />
+                  </div>
+                  <div>
+                    <p className={`text-[10px] uppercase font-bold mb-1.5 mt-2 ${isDark ? 'text-amber-400/60' : 'text-amber-800'}`}>Regional Presets:</p>
+                    <div className="flex flex-wrap gap-1.5">
+                      {REGIONAL_MORGUE_PRESETS.map((m, i) => (
+                        <button type="button" key={i} onClick={() => applyLocationPreset('morgue', m)} className={`text-[10px] px-2.5 py-1.5 rounded-lg font-bold transition cursor-pointer ${plannerForm.morgueName === m.name ? 'bg-amber-500 text-stone-950 shadow-sm font-black' : (isDark ? 'bg-stone-900 text-amber-300 border border-stone-700 hover:border-amber-500' : 'bg-white text-amber-800 border border-amber-200 hover:border-amber-500')}`}>{m.name} <span className="opacity-60">({m.distanceKm} KM)</span></button>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Ceremony Input */}
+                <div className="space-y-2 mb-5">
+                  <div className="flex items-center gap-2 mb-2">
+                    <div className="w-6 h-6 rounded-full bg-amber-500 text-stone-950 flex items-center justify-center font-black text-[10px] shadow-sm">2</div>
+                    <label className={`text-xs font-black uppercase tracking-wider ${isDark ? 'text-amber-100' : 'text-amber-900'}`}>Ceremony Service Venue</label>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
+                    <input placeholder="Ceremony Venue Name *" value={plannerForm.ceremonyName} onChange={e => setPlannerForm({...plannerForm, ceremonyName: e.target.value})} className={`text-xs p-3 border rounded-xl ${isDark ? 'bg-stone-900 border-stone-700 text-stone-200' : 'bg-white border-amber-200 text-stone-800'}`} />
+                    <input placeholder="Town / Area" value={plannerForm.ceremonyTown} onChange={e => setPlannerForm({...plannerForm, ceremonyTown: e.target.value})} className={`text-xs p-3 border rounded-xl ${isDark ? 'bg-stone-900 border-stone-700 text-stone-200' : 'bg-white border-amber-200 text-stone-800'}`} />
+                    <input type="number" placeholder="Distance from Morgue (KM)" value={plannerForm.ceremonyDistance || ''} onChange={e => setPlannerForm({...plannerForm, ceremonyDistance: Number(e.target.value)})} className={`text-xs p-3 border rounded-xl ${isDark ? 'bg-stone-900 border-stone-700 text-stone-200' : 'bg-white border-amber-200 text-stone-800'}`} />
+                  </div>
+                  <div>
+                    <p className={`text-[10px] uppercase font-bold mb-1.5 mt-2 ${isDark ? 'text-amber-400/60' : 'text-amber-800'}`}>Regional Presets:</p>
+                    <div className="flex flex-wrap gap-1.5">
+                      {REGIONAL_CEREMONY_PRESETS.map((v, i) => (
+                        <button type="button" key={i} onClick={() => applyLocationPreset('ceremony', v)} className={`text-[10px] px-2.5 py-1.5 rounded-lg font-bold transition cursor-pointer ${plannerForm.ceremonyName === v.name ? 'bg-amber-500 text-stone-950 shadow-sm font-black' : (isDark ? 'bg-stone-900 text-amber-300 border border-stone-700 hover:border-amber-500' : 'bg-white text-amber-800 border border-amber-200 hover:border-amber-500')}`}>{v.name} <span className="opacity-60">({v.distanceKm} KM)</span></button>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Resting Place Input */}
+                <div className="space-y-2 mb-4">
+                  <div className="flex items-center gap-2 mb-2">
+                    <div className="w-6 h-6 rounded-full bg-[#1C0F0A] text-amber-300 flex items-center justify-center font-black text-[10px] shadow-sm">3</div>
+                    <label className={`text-xs font-black uppercase tracking-wider ${isDark ? 'text-amber-100' : 'text-amber-900'}`}>Final Resting Place (Committal Site)</label>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
+                    <input placeholder="Cemetery / Home Site Name *" value={plannerForm.restingName} onChange={e => setPlannerForm({...plannerForm, restingName: e.target.value})} className={`text-xs p-3 border rounded-xl ${isDark ? 'bg-stone-900 border-stone-700 text-stone-200' : 'bg-white border-amber-200 text-stone-800'}`} />
+                    <input placeholder="Town / Village" value={plannerForm.restingTown} onChange={e => setPlannerForm({...plannerForm, restingTown: e.target.value})} className={`text-xs p-3 border rounded-xl ${isDark ? 'bg-stone-900 border-stone-700 text-stone-200' : 'bg-white border-amber-200 text-stone-800'}`} />
+                    <input type="number" placeholder="Distance from Ceremony (KM)" value={plannerForm.restingDistance || ''} onChange={e => setPlannerForm({...plannerForm, restingDistance: Number(e.target.value)})} className={`text-xs p-3 border rounded-xl ${isDark ? 'bg-stone-900 border-stone-700 text-stone-200' : 'bg-white border-amber-200 text-stone-800'}`} />
+                  </div>
+                  <div>
+                    <p className={`text-[10px] uppercase font-bold mb-1.5 mt-2 ${isDark ? 'text-amber-400/60' : 'text-amber-800'}`}>Regional Presets:</p>
+                    <div className="flex flex-wrap gap-1.5">
+                      {REGIONAL_RESTING_PRESETS.map((bp, i) => (
+                        <button type="button" key={i} onClick={() => applyLocationPreset('resting', bp)} className={`text-[10px] px-2.5 py-1.5 rounded-lg font-bold transition cursor-pointer ${plannerForm.restingName === bp.name ? 'bg-amber-500 text-stone-950 shadow-sm font-black' : (isDark ? 'bg-stone-900 text-amber-300 border border-stone-700 hover:border-amber-500' : 'bg-white text-amber-800 border border-amber-200 hover:border-amber-500')}`}>{bp.name} <span className="opacity-60">({bp.distanceKm} KM)</span></button>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Live calculations */}
+                {liveTransport && (
+                  <div className={`p-4 rounded-2xl border mt-5 transition ${isDark ? 'bg-stone-950/50 border-amber-500/30' : 'bg-white border-amber-200'}`}>
+                    <div className="flex items-center justify-between mb-3">
+                      <div className="flex items-center gap-2">
+                        <Calculator size={14} className={isDark ? 'text-amber-400' : 'text-amber-600'} />
+                        <span className={`text-[10px] uppercase font-black tracking-wider ${isDark ? 'text-amber-300' : 'text-amber-800'}`}>Transport Cost Calculation</span>
                       </div>
-                      <div className="text-right">
-                        <span className="font-black block text-stone-700">KES {rec.amount.toLocaleString()}</span>
-                        <span className={`inline-block text-[9px] font-black uppercase px-2 py-0.5 rounded-full mt-1.5 ${rec.status === 'VERIFIED' ? 'bg-emerald-50 text-emerald-700' : rec.status === 'PENDING_APPROVAL' ? 'bg-amber-50 text-amber-700' : 'bg-rose-50 text-rose-700'}`}>{rec.status.replace('_', ' ')}</span>
+                      <span className={`text-[10px] font-bold ${isDark ? 'text-emerald-400' : 'text-emerald-600'}`}>● Real-time Settle Metrics</span>
+                    </div>
+                    <div className={`space-y-1.5 text-xs ${isDark ? 'text-stone-300' : 'text-stone-700'}`}>
+                      <div className="flex justify-between"><span className="opacity-70">Estimated Route Distance (including hub return)</span><span className="font-bold">{liveTransport.totalKm} KM</span></div>
+                      <div className="flex justify-between"><span className="opacity-70">Base Coach Mobilization Dispatch Fee</span><span className="font-bold">KES {liveTransport.baseDispatchFee.toLocaleString()}.00</span></div>
+                      <div className="flex justify-between"><span className="opacity-70">Mileage Fee Surcharge (KES 120 / KM)</span><span className="font-bold">KES {liveTransport.distanceFee.toLocaleString()}.00</span></div>
+                      <div className={`flex justify-between pt-2 border-t mt-2 ${isDark ? 'border-stone-800' : 'border-stone-200'}`}>
+                        <span className="font-black uppercase text-xs">LOGISTICS SUB-TOTAL</span>
+                        <span className={`font-black text-sm ${isDark ? 'text-amber-300' : 'text-amber-700'}`}>KES {liveTransport.totalTransportCost.toLocaleString()}.00</span>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* 3. Choose Casket */}
+              <div className={`p-6 rounded-3xl border ${isDark ? 'bg-[#1C0F0A] border-amber-950/40' : 'bg-white border-stone-200 shadow-sm'}`}>
+                <div className="flex justify-between items-center mb-4">
+                  <div>
+                    <h3 className="font-serif text-base font-bold">3. Choose Casket Preference</h3>
+                    <p className="text-xs text-stone-400">Directly bound to active workshop inventories.</p>
+                  </div>
+                  {selectedCasket && <span className="text-xs font-bold text-emerald-600 flex items-center gap-1 bg-emerald-50 px-2.5 py-1 rounded-full"><Check size={14}/> Assigned</span>}
+                </div>
+                <div className="grid grid-cols-2 gap-4 max-h-72 overflow-y-auto pr-2">
+                  {inventory.map(c => (
+                    <div key={c.id} onClick={() => setPlannerForm({...plannerForm, casketId: c.id})} className={`p-3 rounded-2xl border cursor-pointer transition ${plannerForm.casketId === c.id ? 'border-amber-500 bg-amber-500/15' : 'border-stone-200 hover:bg-stone-50'}`}>
+                      {c.imageUrl ? <img src={mediaSrc(c.imageUrl)} className="h-24 w-full object-cover rounded-xl mb-2" alt={c.name} /> : <div className="h-24 bg-amber-500/10 rounded-xl mb-2 flex justify-center items-center text-amber-500"><Package size={22}/></div>}
+                      <h4 className="font-bold text-xs">{c.name}</h4>
+                      <p className="text-[10px] text-stone-400 mt-0.5">{c.material.replace('_', ' ')} • {c.size}</p>
+                      <p className="text-xs font-black text-amber-600 mt-1.5">KES {Number(c.retailPrice).toLocaleString()}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* 4. Hearse transport coach */}
+              <div className={`p-6 rounded-3xl border ${isDark ? 'bg-[#1C0F0A] border-amber-950/40' : 'bg-white border-stone-200 shadow-sm'}`}>
+                <div className="flex justify-between items-center mb-4">
+                  <div>
+                    <h3 className="font-serif text-base font-bold">4. Select Hearse Carriage</h3>
+                    <p className="text-xs text-stone-400">Showing vehicles currently free for dispatch.</p>
+                  </div>
+                  {selectedHearse && <span className="text-xs font-bold text-emerald-600 flex items-center gap-1 bg-emerald-50 px-2.5 py-1 rounded-full"><Check size={14}/> Assigned</span>}
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  {availableHearses.map(h => (
+                    <div key={h.id} onClick={() => setPlannerForm({...plannerForm, hearseId: h.id})} className={`p-3 rounded-2xl border cursor-pointer transition flex items-center gap-3 ${plannerForm.hearseId === h.id ? 'border-amber-500 bg-amber-500/15' : 'border-stone-200 hover:bg-stone-50'}`}>
+                      {h.imageUrl ? <img src={mediaSrc(h.imageUrl)} className="h-14 w-14 object-cover rounded-xl shrink-0" alt="" /> : <div className="h-14 w-14 bg-amber-500/10 rounded-xl flex items-center justify-center text-amber-500 shrink-0"><Car size={16}/></div>}
+                      <div>
+                        <h4 className="font-bold text-xs leading-tight">{h.vehicleName}</h4>
+                        <p className="text-[10px] text-stone-400 font-mono mt-1">{h.licensePlate}</p>
                       </div>
                     </div>
                   ))}
                 </div>
               </div>
+
+              {/* 5. Lowering Gear */}
+              <div className={`p-6 rounded-3xl border ${isDark ? 'bg-[#1C0F0A] border-amber-950/40' : 'bg-white border-stone-200 shadow-sm'}`}>
+                <h3 className="font-serif text-base font-bold mb-3">5. Lowering Gear Selection</h3>
+                <div className="grid grid-cols-3 gap-3">
+                  {[
+                    { id: 'none', label: 'Manual Lowering', desc: 'Direct webbing handles run by family/friends.', price: 'Free' },
+                    { id: 'standard', label: 'Standard Mechanical', desc: 'Secure geared mechanical platform.', price: 'KES 10,000' },
+                    { id: 'premium', label: 'Chrome Auto-Lowering', desc: 'Premium auto mechanical chrome frame.', price: 'KES 25,000' }
+                  ].map(p => (
+                    <div key={p.id} onClick={() => setPlannerForm({...plannerForm, loweringGearPreset: p.id})} className={`p-3 border rounded-2xl cursor-pointer transition flex flex-col justify-between ${plannerForm.loweringGearPreset === p.id ? 'border-amber-500 bg-amber-500/15' : 'border-stone-200 hover:bg-stone-50'}`}>
+                      <div>
+                        <h4 className="font-bold text-xs">{p.label}</h4>
+                        <p className="text-[9px] text-stone-400 mt-1 leading-normal mb-2">{p.desc}</p>
+                      </div>
+                      <span className="text-xs font-black text-amber-600 block">{p.price}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* 6. Floral package selection */}
+              <div className={`p-6 rounded-3xl border ${isDark ? 'bg-[#1C0F0A] border-amber-950/40' : 'bg-white border-stone-200 shadow-sm'}`}>
+                <h3 className="font-serif text-base font-bold mb-3">6. Select Floral Preset</h3>
+                <div className="grid grid-cols-3 gap-3">
+                  {[
+                    { id: 'none', label: 'No Floral Plan', desc: 'Family handles arrangements separately.', price: 'Free' },
+                    { id: 'simple', label: 'Simple Wreath', desc: 'Casket top fresh wreath layout.', price: 'KES 5,000' },
+                    { id: 'majestic', label: 'Majestic blanket', desc: 'Premium fresh blanket cover & 4 podium sprays.', price: 'KES 15,000' }
+                  ].map(f => (
+                    <div key={f.id} onClick={() => setPlannerForm({...plannerForm, floralPreset: f.id})} className={`p-3 border rounded-2xl cursor-pointer transition flex flex-col justify-between ${plannerForm.floralPreset === f.id ? 'border-amber-500 bg-amber-500/15' : 'border-stone-200 hover:bg-stone-50'}`}>
+                      <div>
+                        <h4 className="font-bold text-xs">{f.label}</h4>
+                        <p className="text-[9px] text-stone-400 mt-1 leading-normal mb-2">{f.desc}</p>
+                      </div>
+                      <span className="text-xs font-black text-amber-600 block">{f.price}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* 7. Pallbearers */}
+              <div className={`p-6 rounded-3xl border flex items-center justify-between ${isDark ? 'bg-[#1C0F0A] border-amber-950/40' : 'bg-white border-stone-200 shadow-sm'}`}>
+                <div>
+                  <h3 className="font-serif text-base font-bold">7. Uniformed Pallbearer Squad</h3>
+                  <p className="text-xs text-stone-400 mt-0.5">Six professionally trained pallbearers in uniform.</p>
+                </div>
+                <input type="checkbox" checked={plannerForm.hasPallbearers} onChange={e => setPlannerForm({...plannerForm, hasPallbearers: e.target.checked})} className="h-5 w-5 rounded border-stone-300 text-amber-600 focus:ring-amber-500" />
+              </div>
             </div>
-          )}
-        </main>
-      ) : (
-        <div className="max-w-md mx-auto my-20 p-8 rounded-3xl border border-stone-200 bg-white text-slate-800 shadow-2xl space-y-6 text-center">
-          <TripleMLogo className="w-16 h-16 mx-auto animate-bounce" />
-          <h2 className="font-serif text-xl font-bold">Secure Family Console</h2>
-          <p className="text-xs text-stone-400 leading-relaxed">Enter your login provider credentials to view your current bill balances and map out customized logistics.</p>
-          <div className="space-y-3">
-            <button onClick={() => handleLogin('Google')} disabled={loadingAction !== null} className="w-full flex items-center justify-center gap-3 border border-stone-300 hover:bg-stone-50 font-bold text-xs py-3.5 rounded-xl transition cursor-pointer">
-              {loadingAction === 'Google' ? <div className="animate-spin h-4 w-4 border-2 border-amber-500 border-t-transparent rounded-full" /> : <GoogleIcon />}
-              Sign In via Google Account
+
+            {/* LIVE QUOTE SUMMARY PANEL */}
+            <div className={`w-full lg:w-80 shrink-0 sticky top-24 rounded-3xl border p-6 shadow-xl ${isDark ? 'bg-[#1C0F0A] border-amber-950/40' : 'bg-white border-stone-200'}`}>
+              <h3 className="font-serif text-base font-bold mb-4 border-b border-stone-200/20 pb-2">Arrangement Cost Summary</h3>
+              
+              <div className="space-y-4 text-xs">
+                <div className="flex justify-between items-start">
+                  <span className="text-stone-400 font-bold w-28">Director Fees</span>
+                  <div className="text-right">
+                    <div className="font-bold text-stone-600">Base Services</div>
+                    <div className="font-bold text-stone-500 mt-0.5">KES {baseCost.toLocaleString()}.00</div>
+                  </div>
+                </div>
+
+                <div className="flex justify-between items-start">
+                  <span className="text-stone-400 font-bold w-28">Selected Casket</span>
+                  <div className="text-right">
+                    <div className="font-bold text-stone-600">{selectedCasket ? selectedCasket.name : 'Unassigned'}</div>
+                    <div className="font-bold text-stone-500 mt-0.5">KES {liveCasketPrice.toLocaleString()}.00</div>
+                  </div>
+                </div>
+                
+                <div className="flex justify-between items-start">
+                  <span className="text-stone-400 font-bold w-28">Hearse Logistics</span>
+                  <div className="text-right">
+                    <div className="font-bold text-stone-600">{liveTransport ? `${liveTransport.totalKm} KM Total Route` : 'Awaiting Locations'}</div>
+                    <div className="font-bold text-amber-600 mt-0.5">KES {liveTransportCost.toLocaleString()}.00</div>
+                  </div>
+                </div>
+
+                <div className="flex justify-between items-start">
+                  <span className="text-stone-400 font-bold w-28">Lowering Set</span>
+                  <div className="text-right">
+                    <div className="font-bold text-stone-600 uppercase text-[10px]">{plannerForm.loweringGearPreset}</div>
+                    <div className="font-bold text-stone-500 mt-0.5">KES {liveGearPrice.toLocaleString()}.00</div>
+                  </div>
+                </div>
+
+                <div className="flex justify-between items-start">
+                  <span className="text-stone-400 font-bold w-28">Floral Display</span>
+                  <div className="text-right">
+                    <div className="font-bold text-stone-600 uppercase text-[10px]">{plannerForm.floralPreset}</div>
+                    <div className="font-bold text-stone-500 mt-0.5">KES {liveFloralPrice.toLocaleString()}.00</div>
+                  </div>
+                </div>
+
+                {plannerForm.hasPallbearers && (
+                  <div className="flex justify-between items-start">
+                    <span className="text-stone-400 font-bold w-28">Pallbearers Squad</span>
+                    <div className="text-right">
+                      <div className="font-bold text-stone-500">KES {livePallbearerPrice.toLocaleString()}.00</div>
+                    </div>
+                  </div>
+                )}
+                
+                <div className="pt-4 border-t border-stone-200/20 flex justify-between items-center text-sm font-bold">
+                  <span>Arranged Total</span>
+                  <span className="text-base text-amber-600">KES {liveTotal.toLocaleString()}.00</span>
+                </div>
+              </div>
+
+              <button 
+                onClick={saveArrangementPlan}
+                disabled={!hasTransportLocations}
+                className="w-full mt-6 bg-amber-500 hover:bg-amber-400 disabled:bg-stone-300 disabled:cursor-not-allowed text-stone-950 font-black py-3.5 rounded-xl text-xs uppercase tracking-wider transition shadow-lg cursor-pointer"
+              >
+                {hasTransportLocations ? 'Confirm Service Selections' : 'Complete Route Mapping First'}
+              </button>
+              {!hasTransportLocations && (
+                <p className="text-[10px] text-rose-500 text-center mt-2.5 font-bold">Please specify your Morgue, Ceremony, and Resting Place locations to activate transport pricing.</p>
+              )}
+            </div>
+          </div>
+        )}
+
+        {portalTab === 'payments' && (
+          <div className="grid md:grid-cols-2 gap-8 text-slate-800">
+            <div className={`rounded-3xl border p-6 md:p-8 space-y-6 ${isDark ? 'bg-[#1C0F0A] border-amber-950/40' : 'bg-white border-stone-200 shadow-sm'}`}>
+              <div>
+                <h3 className="font-serif text-base font-bold text-stone-800">Submit M-Pesa Code</h3>
+                <p className="text-xs text-stone-400">Validate transaction with reference codes.</p>
+              </div>
+              <form onSubmit={handleReceiptSubmit} className="space-y-4">
+                <div>
+                  <label className="block text-[10px] font-bold uppercase text-stone-500 tracking-wider mb-1">Amount Paid (KES) *</label>
+                  <input required type="number" value={newReceipt.amt} onChange={e => setNewReceipt({...newReceipt, amt: e.target.value})} className="w-full text-xs p-3 border border-stone-200 bg-stone-50 rounded-xl focus:bg-white transition" />
+                </div>
+                <div>
+                  <label className="block text-[10px] font-bold uppercase text-stone-500 tracking-wider mb-1">M-Pesa Reference Code *</label>
+                  <input required type="text" placeholder="E.g., SDR97G8H2K" value={newReceipt.ref} onChange={e => setNewReceipt({...newReceipt, ref: e.target.value})} className="w-full text-xs p-3 border border-stone-200 bg-stone-50 rounded-xl uppercase font-mono focus:bg-white transition" />
+                </div>
+                <div>
+                  <label className="block text-[10px] font-bold uppercase text-stone-500 tracking-wider mb-1">Payment Note</label>
+                  <input type="text" placeholder="E.g., Commitment Deposit Part Payment" value={newReceipt.note} onChange={e => setNewReceipt({...newReceipt, note: e.target.value})} className="w-full text-xs p-3 border border-stone-200 bg-stone-50 rounded-xl focus:bg-white transition" />
+                </div>
+                <button type="submit" className="w-full bg-[#1C0F0A] hover:bg-[#2A1810] text-amber-200 font-bold py-3.5 rounded-xl text-xs uppercase tracking-wider transition shadow-sm cursor-pointer">Submit Receipt</button>
+              </form>
+            </div>
+            
+            <div className={`rounded-3xl border p-6 md:p-8 space-y-6 ${isDark ? 'bg-[#1C0F0A] border-amber-950/40' : 'bg-white border-stone-200 shadow-sm'}`}>
+              <h3 className="font-serif text-base font-bold text-stone-800">Payment Registry Logs</h3>
+              <div className="space-y-3">
+                {receipts.length === 0 && <p className="text-xs text-stone-400 py-6 text-center italic">No transaction tickets filed.</p>}
+                {receipts.map(rec => (
+                  <div key={rec.id} className="p-4 rounded-xl border border-stone-200 bg-stone-50 flex justify-between items-center text-xs shadow-inner">
+                    <div>
+                      <div className="font-mono font-black text-amber-700">{rec.referenceNumber}</div>
+                      <p className="text-[10px] text-stone-400 mt-1">{rec.date} • {rec.note || 'No description note attached'}</p>
+                    </div>
+                    <div className="text-right">
+                      <span className="font-black block text-stone-700">KES {rec.amount.toLocaleString()}</span>
+                      <span className={`inline-block text-[9px] font-black uppercase px-2 py-0.5 rounded-full mt-1.5 ${rec.status === 'VERIFIED' ? 'bg-emerald-50 text-emerald-700' : rec.status === 'PENDING_APPROVAL' ? 'bg-amber-50 text-amber-700' : 'bg-rose-50 text-rose-700'}`}>{rec.status.replace('_', ' ')}</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
+      </main>
+    ) : (
+      <div className="max-w-md mx-auto my-20 p-8 rounded-3xl border border-stone-200 bg-white text-slate-800 shadow-2xl space-y-6 text-center">
+        <TripleMLogo className="w-16 h-16 mx-auto" />
+        <h2 className="font-serif text-xl font-bold">Secure Family Console</h2>
+        <p className="text-xs text-stone-400 leading-relaxed">Create a family profile or sign in to calculate transport routes and confirm service arrangements.</p>
+        
+        <div className="space-y-4 text-left">
+          <div className="flex bg-stone-100 rounded-xl p-1 text-xs font-bold">
+            <button
+              type="button"
+              onClick={() => setAuthMode('register')}
+              className={`flex-1 py-2 rounded-lg transition cursor-pointer ${authMode === 'register' ? 'bg-amber-500 text-stone-950 font-black shadow-sm' : 'text-stone-500'}`}
+            >
+              Create Account
             </button>
-            <button onClick={() => handleLogin('Facebook')} disabled={loadingAction !== null} className="w-full flex items-center justify-center gap-3 bg-[#1877F2] hover:bg-[#166FE5] text-white font-bold text-xs py-3.5 rounded-xl transition cursor-pointer">
-              {loadingAction === 'Facebook' ? <div className="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full" /> : <FacebookIcon />}
-              Sign In via Facebook Account
+            <button
+              type="button"
+              onClick={() => setAuthMode('login')}
+              className={`flex-1 py-2 rounded-lg transition cursor-pointer ${authMode === 'login' ? 'bg-amber-500 text-stone-950 font-black shadow-sm' : 'text-stone-500'}`}
+            >
+              Sign In
             </button>
           </div>
+
+          <form onSubmit={handleFamilyAuthSubmit} className="space-y-3">
+            {authMode === 'register' && (
+              <div className="grid grid-cols-2 gap-2">
+                <input
+                  required
+                  placeholder="First Name *"
+                  value={familyAuth.firstName}
+                  onChange={e => setFamilyAuth({ ...familyAuth, firstName: e.target.value })}
+                  className="text-xs p-3 border border-stone-200 rounded-xl bg-white text-stone-800 outline-none focus:border-amber-500"
+                />
+                <input
+                  required
+                  placeholder="Last Name *"
+                  value={familyAuth.lastName}
+                  onChange={e => setFamilyAuth({ ...familyAuth, lastName: e.target.value })}
+                  className="text-xs p-3 border border-stone-200 rounded-xl bg-white text-stone-800 outline-none focus:border-amber-500"
+                />
+              </div>
+            )}
+
+            <input
+              required
+              type="email"
+              placeholder="Email Address *"
+              value={familyAuth.email}
+              onChange={e => setFamilyAuth({ ...familyAuth, email: e.target.value })}
+              className="w-full text-xs p-3 border border-stone-200 rounded-xl bg-white text-stone-800 outline-none focus:border-amber-500"
+            />
+            <input
+              required
+              placeholder="M-Pesa Phone Number *"
+              value={familyAuth.phone}
+              onChange={e => setFamilyAuth({ ...familyAuth, phone: e.target.value })}
+              className="w-full text-xs p-3 border border-stone-200 rounded-xl bg-white text-stone-800 outline-none focus:border-amber-500"
+            />
+
+            <button
+              type="submit"
+              disabled={loadingAction !== null}
+              className="w-full bg-amber-500 hover:bg-amber-400 text-stone-950 font-black py-3.5 rounded-xl text-xs uppercase tracking-wider transition shadow-md cursor-pointer"
+            >
+              {loadingAction === 'form'
+                ? 'Processing...'
+                : authMode === 'register'
+                  ? 'Create Family Account'
+                  : 'Sign In to Portal'}
+            </button>
+          </form>
+
+          <div className="relative py-2">
+            <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-stone-200" /></div>
+            <div className="relative flex justify-center text-[10px] uppercase"><span className="bg-white px-2 text-stone-400">Or continue with demo</span></div>
+          </div>
+
+          <button
+            type="button"
+            onClick={() => handleSocialLogin('Google')}
+            disabled={loadingAction !== null}
+            className="w-full flex items-center justify-center gap-3 border border-stone-300 hover:bg-stone-50 font-bold text-xs py-3 rounded-xl transition cursor-pointer"
+          >
+            {loadingAction === 'Google' ? <div className="animate-spin h-4 w-4 border-2 border-amber-500 border-t-transparent rounded-full" /> : <GoogleIcon />}
+            Continue with Google (Demo)
+          </button>
+
+          <button
+            type="button"
+            onClick={() => handleSocialLogin('Facebook')}
+            disabled={loadingAction !== null}
+            className="w-full flex items-center justify-center gap-3 bg-[#1877F2] hover:bg-[#166FE5] text-white font-bold text-xs py-3 rounded-xl transition cursor-pointer"
+          >
+            {loadingAction === 'Facebook' ? <div className="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full" /> : <FacebookIcon />}
+            Continue with Facebook (Demo)
+          </button>
         </div>
-      )}
-    </div>
-  );
+      </div>
+    )}
+  </div>
+);
 };
 
 // ============================================================================
@@ -1833,7 +2062,7 @@ const StaffPortal = ({ onBack, theme, addToast }: any) => {
                 <span className="text-amber-500 text-[10px] uppercase tracking-wider font-extrabold">Operations Hub</span>
                 <h2 className="text-2xl font-serif font-bold text-stone-900">Executive Board</h2>
               </div>
-              <button onClick={syncAllDatabaseData} className="p-2 border rounded-xl hover:bg-stone-50 text-stone-500 transition"><RefreshCw size={14} /></button>
+              <button onClick={syncAllDatabaseData} className="p-2 border rounded-xl hover:bg-stone-50 text-stone-500 transition cursor-pointer"><RefreshCw size={14} /></button>
             </div>
             
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -1850,14 +2079,14 @@ const StaffPortal = ({ onBack, theme, addToast }: any) => {
                   {lowStockAlerts > 0 ? (
                     <div className="p-3 bg-amber-50 border border-amber-200 rounded-xl flex items-center justify-between">
                       <div className="flex items-center gap-2"><AlertTriangle size={16} className="text-amber-600" /><span><strong className="text-amber-800">{lowStockAlerts} casket models</strong> low on stock.</span></div>
-                      <button onClick={() => setTab('inventory')} className="text-amber-700 font-bold underline">Restock</button>
+                      <button onClick={() => setTab('inventory')} className="text-amber-700 font-bold underline cursor-pointer">Restock</button>
                     </div>
                   ) : <div className="p-3 bg-emerald-50 text-emerald-800 rounded-xl flex items-center gap-2"><CheckCircle2 size={16} /><span>Casket stock levels healthy.</span></div>}
 
                   {pendingValidationDeposits > 0 ? (
                     <div className="p-3 bg-rose-50 border border-rose-200 rounded-xl flex items-center justify-between">
                       <div className="flex items-center gap-2"><DollarSign size={16} className="text-rose-600" /><span><strong className="text-rose-800">{pendingValidationDeposits} pending M-Pesa</strong> validations.</span></div>
-                      <button onClick={() => setTab('receipts')} className="text-rose-700 font-bold underline">Review Queue</button>
+                      <button onClick={() => setTab('receipts')} className="text-rose-700 font-bold underline cursor-pointer">Review Queue</button>
                     </div>
                   ) : <div className="p-3 bg-emerald-50 text-emerald-800 rounded-xl flex items-center gap-2"><CheckCircle2 size={16} /><span>All submitted transactions validated.</span></div>}
                 </div>
@@ -1919,8 +2148,8 @@ const StaffPortal = ({ onBack, theme, addToast }: any) => {
                       <p className={`font-black mt-0.5 ${c.isLowStock ? 'text-rose-600' : 'text-stone-800'}`}>{c.currentStock} units</p>
                     </div>
                     <div className="flex gap-1">
-                      <button onClick={() => handleStockLevelAdjustment(c.id, -1)} className="w-8 h-8 border bg-white rounded-lg font-bold text-stone-600 hover:bg-stone-50 transition">-</button>
-                      <button onClick={() => handleStockLevelAdjustment(c.id, 1)} className="w-8 h-8 border bg-white rounded-lg font-bold text-stone-600 hover:bg-stone-50 transition">+</button>
+                      <button onClick={() => handleStockLevelAdjustment(c.id, -1)} className="w-8 h-8 border bg-white rounded-lg font-bold text-stone-600 hover:bg-stone-50 transition cursor-pointer">-</button>
+                      <button onClick={() => handleStockLevelAdjustment(c.id, 1)} className="w-8 h-8 border bg-white rounded-lg font-bold text-stone-600 hover:bg-stone-50 transition cursor-pointer">+</button>
                     </div>
                   </div>
                   
@@ -2028,7 +2257,7 @@ const StaffPortal = ({ onBack, theme, addToast }: any) => {
                               <Route size={12} className="text-amber-700" />
                               <p className="text-[10px] uppercase font-black text-amber-800 tracking-wider">Logistical Routing</p>
                             </div>
-                            <button onClick={() => setViewingTransportInvoice(b)} className="text-[10px] font-black text-amber-700 hover:text-amber-950 flex items-center gap-1 transition">Open Invoice <RightArrow size={10} /></button>
+                            <button onClick={() => setViewingTransportInvoice(b)} className="text-[10px] font-black text-amber-700 hover:text-amber-950 flex items-center gap-1 transition cursor-pointer">Open Invoice <RightArrow size={10} /></button>
                           </div>
                           <div className="space-y-1.5 text-[11px] text-stone-700">
                             <div className="flex items-center gap-2"><MapPin size={11} className="text-amber-600 shrink-0" /><span><strong>Morgue Point:</strong> {b.transport.morgue.name} ({b.transport.morgue.town})</span></div>
@@ -2098,8 +2327,8 @@ const StaffPortal = ({ onBack, theme, addToast }: any) => {
                       <td className="p-4 text-right">
                         {r.status === 'PENDING_APPROVAL' && (
                           <div className="flex justify-end gap-1.5">
-                            <button onClick={() => handleVerifyReceipt(r.id, false)} className="p-1 px-2 border rounded-lg hover:bg-rose-50 text-rose-600 transition font-bold text-[10px]">Reject</button>
-                            <button onClick={() => handleVerifyReceipt(r.id, true)} className="p-1 px-2.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg transition font-bold text-[10px] flex items-center gap-1"><Check size={10}/> Validate</button>
+                            <button onClick={() => handleVerifyReceipt(r.id, false)} className="p-1 px-2 border rounded-lg hover:bg-rose-50 text-rose-600 transition font-bold text-[10px] cursor-pointer">Reject</button>
+                            <button onClick={() => handleVerifyReceipt(r.id, true)} className="p-1 px-2.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg transition font-bold text-[10px] flex items-center gap-1 cursor-pointer"><Check size={10}/> Validate</button>
                           </div>
                         )}
                       </td>
@@ -2163,7 +2392,7 @@ const StaffPortal = ({ onBack, theme, addToast }: any) => {
                 </div>
               </div>
               <label className="border-2 border-dashed border-stone-200 rounded-xl p-4 flex flex-col items-center justify-center cursor-pointer hover:bg-stone-50 transition"><UploadCloud size={20} className="text-stone-400 mb-1" /><span className="text-[10px] font-bold text-stone-500">{catalogImageFile ? catalogImageFile.name : 'Select image file'}</span><input type="file" accept="image/*" className="hidden" onChange={e => setCatalogImageFile(e.target.files?.[0] || null)} /></label>
-              <div className="flex justify-end gap-2 pt-2 border-t border-stone-100"><button type="button" onClick={() => setIsAddCatalogOpen(false)} className="px-4 py-2 font-bold text-stone-400">Cancel</button><button type="submit" className="px-5 py-2.5 font-bold bg-amber-500 hover:bg-amber-400 text-stone-950 rounded-xl cursor-pointer">Save</button></div>
+              <div className="flex justify-end gap-2 pt-2 border-t border-stone-100"><button type="button" onClick={() => setIsAddCatalogOpen(false)} className="px-4 py-2 font-bold text-stone-400 cursor-pointer">Cancel</button><button type="submit" className="px-5 py-2.5 font-bold bg-amber-500 hover:bg-amber-400 text-stone-950 rounded-xl cursor-pointer">Save</button></div>
             </form>
           </div>
         </div>
@@ -2185,7 +2414,7 @@ const StaffPortal = ({ onBack, theme, addToast }: any) => {
                 <div><label className="block text-[9px] font-bold uppercase text-stone-500 mb-1">Construct Year *</label><input required type="number" value={hearseForm.year} onChange={e => setHearseForm({ ...hearseForm, year: Number(e.target.value) })} className="w-full p-3 border border-stone-200 bg-stone-50 rounded-xl" /></div>
               </div>
               <label className="border-2 border-dashed border-stone-200 rounded-xl p-4 flex flex-col items-center justify-center cursor-pointer hover:bg-stone-50 transition"><Camera size={20} className="text-stone-400 mb-1" /><span className="text-[10px] font-bold text-stone-500">{hearseImageFile ? hearseImageFile.name : 'Select portrait file'}</span><input type="file" accept="image/*" className="hidden" onChange={e => setHearseImageFile(e.target.files?.[0] || null)} /></label>
-              <div className="flex justify-end gap-2 pt-2 border-t border-stone-100"><button type="button" onClick={() => setIsAddHearseOpen(false)} className="px-4 py-2 font-bold text-stone-400">Cancel</button><button type="submit" className="px-5 py-2.5 font-bold bg-amber-500 hover:bg-amber-400 text-stone-950 rounded-xl cursor-pointer">Register</button></div>
+              <div className="flex justify-end gap-2 pt-2 border-t border-stone-100"><button type="button" onClick={() => setIsAddHearseOpen(false)} className="px-4 py-2 font-bold text-stone-400 cursor-pointer">Cancel</button><button type="submit" className="px-5 py-2.5 font-bold bg-amber-500 hover:bg-amber-400 text-stone-950 rounded-xl cursor-pointer">Register</button></div>
             </form>
           </div>
         </div>
