@@ -26,7 +26,7 @@ app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', database: 'connected' });
 });
 
-// Login Handler function
+// Login Handler
 const handleLoginRequest = async (req, res) => {
   const { email, password } = req.body;
   try {
@@ -49,11 +49,10 @@ const handleLoginRequest = async (req, res) => {
   }
 };
 
-// Accept both /api/login and /api/login.php for backward compatibility
 app.post('/api/login', handleLoginRequest);
 app.post('/api/login.php', handleLoginRequest);
 
-// Current User check (/api/me and /api/me.php)
+// Current User Handler
 const handleMeRequest = async (req, res) => {
   const header = req.headers.authorization || '';
   const token = header.startsWith('Bearer ') ? header.slice(7) : null;
@@ -73,7 +72,7 @@ const handleMeRequest = async (req, res) => {
 app.get('/api/me', handleMeRequest);
 app.get('/api/me.php', handleMeRequest);
 
-// Auto-locate frontend dist folder
+// Static frontend serving
 const possibleDistPaths = [
   path.join(__dirname, 'dist'),
   path.join(__dirname, 'frontend', 'dist'),
