@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "npx prisma generate && npx prisma db push --accept-data-loss && vite build",
     "start": "node server.js",
     "seed": "node seed.js",
     "lint": "oxlint",
