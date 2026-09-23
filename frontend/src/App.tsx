@@ -850,81 +850,165 @@ const ClientWebsite = ({ onEnterAdmin, onEnterFamily, theme, onToggleTheme, addT
   ];
 
   return (
-    <div className={`min-h-screen transition-colors duration-300 font-sans ${isDark ? 'bg-[#150B07] text-stone-200' : 'bg-[#FDFBF7] text-stone-800'}`}>
+    <div className={`min-h-screen overflow-x-hidden transition-colors duration-300 font-sans ${isDark ? 'bg-[#150B07] text-stone-200' : 'bg-[#FDFBF7] text-stone-800'}`}>
       <ImageLightbox media={activeMedia} onClose={() => setActiveMedia(null)} />
       <EulogyGeneratorModal isOpen={isEulogyOpen} onClose={() => setIsEulogyOpen(false)} addToast={addToast} />
       {viewingMemorial && <MemorialPageViewer memorial={viewingMemorial} onClose={() => setViewingMemorial(null)} />}
 
       <header className={`sticky top-0 z-40 backdrop-blur-md border-b transition-colors ${isDark ? 'bg-[#211109]/95 border-amber-950/40 text-amber-100' : 'bg-white/90 border-amber-900/10'}`}>
-        <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
-          <div className="flex items-center gap-3">
-            <TripleMLogo className="w-12 h-12" />
-            <div>
-              <h1 className={`text-xl font-serif font-extrabold tracking-wide ${isDark ? 'text-amber-100' : 'text-[#2A1810]'}`}>Triple M Services</h1>
-              <p className="text-[9px] uppercase tracking-widest text-amber-500 font-black">Professional Funeral Directors • Subukia</p>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between gap-3">
+          <div className="flex items-center gap-2 sm:gap-3 min-w-0">
+            <TripleMLogo className="w-9 h-9 sm:w-12 sm:h-12 flex-shrink-0" />
+            <div className="min-w-0">
+              <h1 className={`text-sm sm:text-xl font-serif font-extrabold tracking-wide truncate ${isDark ? 'text-amber-100' : 'text-[#2A1810]'}`}>
+                Triple M Services
+              </h1>
+              <p className="text-[8px] sm:text-[9px] uppercase tracking-widest text-amber-500 font-black truncate">
+                Professional Funeral Directors • Subukia
+              </p>
             </div>
           </div>
-          <nav className="hidden lg:flex gap-5 text-xs font-bold items-center">
-            <a href="#services" className="hover:text-amber-500 transition">Services</a>
-            <a href="#fleet" className="hover:text-amber-500 transition">Fleet</a>
-            <a href="#catalog" className="hover:text-amber-500 transition">Caskets</a>
-            <button onClick={() => setIsEulogyOpen(true)} className="bg-amber-500 hover:bg-amber-400 text-stone-950 text-xs font-black px-4 py-2.5 rounded-full flex items-center gap-1.5 transition shadow-sm cursor-pointer"><Feather size={14} /> AI Memorial</button>
-            <button onClick={onEnterFamily} className="text-amber-600 border border-amber-500/40 bg-amber-500/5 hover:bg-amber-500/10 text-xs font-black px-4 py-2.5 rounded-full flex items-center gap-1.5 transition cursor-pointer"><UserIcon size={14} /> Family Portal</button>
-            <button onClick={onEnterAdmin} className="text-stone-500 border border-stone-300 bg-stone-100 hover:bg-stone-200 text-xs font-bold px-4 py-2.5 rounded-full flex items-center gap-1.5 transition cursor-pointer"><Lock size={14} /> Admin Access</button>
-            <button onClick={onToggleTheme} className={`p-2.5 rounded-full border transition cursor-pointer ${isDark ? 'border-amber-900 text-amber-300 bg-amber-950/20' : 'border-stone-200 text-stone-600 bg-stone-50'}`}>{isDark ? <Sun size={14} /> : <Moon size={14} />}</button>
+
+          <nav className="flex items-center gap-2 sm:gap-3 flex-wrap justify-end">
+            <div className="hidden md:flex gap-5 text-xs font-bold items-center">
+              <a href="#services" className="hover:text-amber-500 transition">Services</a>
+              <a href="#fleet" className="hover:text-amber-500 transition">Fleet</a>
+              <a href="#catalog" className="hover:text-amber-500 transition">Caskets</a>
+            </div>
+
+            <button
+              onClick={() => setIsEulogyOpen(true)}
+              className="hidden sm:inline-flex bg-amber-500 hover:bg-amber-400 text-stone-950 text-[11px] sm:text-xs font-black px-3 sm:px-4 py-2 sm:py-2.5 rounded-full items-center gap-1.5 transition shadow-sm cursor-pointer"
+            >
+              <Feather size={14} /> AI Memorial
+            </button>
+
+            <button
+              onClick={onEnterFamily}
+              className="text-amber-600 border border-amber-500/40 bg-amber-500/5 hover:bg-amber-500/10 text-[11px] sm:text-xs font-black px-3 sm:px-4 py-2 sm:py-2.5 rounded-full flex items-center gap-1.5 transition cursor-pointer"
+            >
+              <UserIcon size={14} /> <span className="hidden sm:inline">Family Portal</span><span className="sm:hidden">Family</span>
+            </button>
+
+            <button
+              onClick={onEnterAdmin}
+              className="text-stone-500 border border-stone-300 bg-stone-100 hover:bg-stone-200 text-[11px] sm:text-xs font-bold px-3 sm:px-4 py-2 sm:py-2.5 rounded-full flex items-center gap-1.5 transition cursor-pointer"
+            >
+              <Lock size={14} /> <span className="hidden sm:inline">Admin Access</span><span className="sm:hidden">Admin</span>
+            </button>
+
+            <button
+              onClick={onToggleTheme}
+              className={`p-2 sm:p-2.5 rounded-full border transition cursor-pointer ${isDark ? 'border-amber-900 text-amber-300 bg-amber-950/20' : 'border-stone-200 text-stone-600 bg-stone-50'}`}
+            >
+              {isDark ? <Sun size={14} /> : <Moon size={14} />}
+            </button>
           </nav>
         </div>
       </header>
 
-      <section className="relative py-24 md:py-32 px-6 text-center text-white bg-gradient-to-br from-[#2A1810] via-[#1C0F0A] to-[#110905] overflow-hidden">
-        <TripleMLogo className="w-20 h-20 mx-auto mb-6 drop-shadow-xl" />
-        <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-semibold bg-amber-500/15 text-amber-300 border border-amber-500/30 mb-6 uppercase tracking-widest"><Sparkles size={12} /> Serving Nakuru & Subukia Regions</span>
-        <h2 className="text-4xl md:text-6xl font-serif font-extrabold tracking-tight mb-6">Honoring Precious Lives with<br /><span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-200 via-amber-400 to-amber-100">Dignity, Serenity & Absolute Respect</span></h2>
-        <p className="text-stone-300 max-w-2xl mx-auto mb-10 text-sm md:text-base leading-relaxed">Let us handle the details. Create customized service arrangements, draft itemized transport routes, select robust caskets, and generate instant remembrance sites with guests QR codes.</p>
-        <div className="flex justify-center gap-4 flex-wrap">
-          <button onClick={onEnterFamily} className="bg-amber-500 hover:bg-amber-400 text-stone-950 px-8 py-4 rounded-full font-black text-xs uppercase tracking-wider transition duration-300 transform hover:-translate-y-0.5 shadow-lg flex items-center gap-2 cursor-pointer">Plan Service & Get Quote <RightArrow size={14} /></button>
-          <button onClick={() => setIsEulogyOpen(true)} className="bg-transparent border border-white/30 hover:bg-white/10 text-white px-8 py-4 rounded-full font-black text-xs uppercase tracking-wider transition cursor-pointer">Create AI Memorial Page</button>
+      <section className="relative py-14 sm:py-20 md:py-32 px-4 sm:px-6 text-center text-white bg-gradient-to-br from-[#2A1810] via-[#1C0F0A] to-[#110905] overflow-hidden">
+        <TripleMLogo className="w-14 h-14 sm:w-20 sm:h-20 mx-auto mb-5 sm:mb-6 drop-shadow-xl" />
+        <span className="inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 rounded-full text-[10px] sm:text-xs font-semibold bg-amber-500/15 text-amber-300 border border-amber-500/30 mb-5 sm:mb-6 uppercase tracking-widest">
+          <Sparkles size={12} /> Serving Nakuru & Subukia Regions
+        </span>
+
+        <h2 className="text-3xl sm:text-4xl md:text-6xl font-serif font-extrabold tracking-tight mb-5 sm:mb-6 leading-tight">
+          Honoring Precious Lives with
+          <span className="block text-transparent bg-clip-text bg-gradient-to-r from-amber-200 via-amber-400 to-amber-100">
+            Dignity, Serenity & Absolute Respect
+          </span>
+        </h2>
+
+        <p className="text-stone-300 max-w-2xl mx-auto mb-8 sm:mb-10 text-sm md:text-base leading-relaxed px-2">
+          Let us handle the details. Create customized service arrangements, draft itemized transport routes, select robust caskets, and generate instant remembrance sites with guests QR codes.
+        </p>
+
+        <div className="flex flex-col sm:flex-row justify-center gap-3 sm:gap-4 w-full max-w-md sm:max-w-none mx-auto">
+          <button
+            onClick={onEnterFamily}
+            className="w-full sm:w-auto bg-amber-500 hover:bg-amber-400 text-stone-950 px-6 sm:px-8 py-3.5 sm:py-4 rounded-full font-black text-xs uppercase tracking-wider transition duration-300 transform hover:-translate-y-0.5 shadow-lg flex items-center justify-center gap-2 cursor-pointer"
+          >
+            Plan Service & Get Quote <RightArrow size={14} />
+          </button>
+
+          <button
+            onClick={() => setIsEulogyOpen(true)}
+            className="w-full sm:w-auto bg-transparent border border-white/30 hover:bg-white/10 text-white px-6 sm:px-8 py-3.5 sm:py-4 rounded-full font-black text-xs uppercase tracking-wider transition cursor-pointer"
+          >
+            Create AI Memorial Page
+          </button>
         </div>
       </section>
 
-      <section id="services" className="py-20 px-6 max-w-7xl mx-auto">
-        <div className="text-center mb-16">
+      <section id="services" className="py-14 sm:py-20 px-4 sm:px-6 max-w-7xl mx-auto">
+        <div className="text-center mb-10 sm:mb-16">
           <span className="text-amber-500 font-extrabold uppercase text-xs tracking-widest">Our Professional Standard</span>
-          <h3 className={`text-3xl font-serif font-bold mt-2 ${isDark ? 'text-amber-100' : 'text-[#2A1810]'}`}>Comprehensive Bereavement Support</h3>
+          <h3 className={`text-2xl sm:text-3xl font-serif font-bold mt-2 ${isDark ? 'text-amber-100' : 'text-[#2A1810]'}`}>
+            Comprehensive Bereavement Support
+          </h3>
         </div>
-        <div className="grid md:grid-cols-3 lg:grid-cols-6 gap-6">
+
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 sm:gap-6">
           {services.map((s, i) => (
-            <div key={i} onClick={s.action} className={`p-6 rounded-3xl border text-center transition duration-300 ${s.action ? 'cursor-pointer transform hover:-translate-y-1' : ''} ${isDark ? 'bg-[#1C0F0A] border-amber-950/40' : 'bg-white border-stone-200 shadow-sm'} ${s.isNew ? 'ring-2 ring-amber-500/50' : ''}`}>
-              {s.isNew && <span className="inline-block mb-3 bg-amber-500 text-stone-950 text-[9px] font-black uppercase px-2 py-0.5 rounded-full">New</span>}
-              <div className={`w-12 h-12 mx-auto mb-4 rounded-2xl flex items-center justify-center ${s.isNew ? 'bg-amber-500 text-white' : 'bg-amber-500/10 text-amber-500'}`}><s.icon size={22} /></div>
-              <h4 className={`font-bold text-sm mb-2 ${isDark ? 'text-amber-100' : 'text-[#2A1810]'}`}>{s.title}</h4>
-              <p className="text-xs text-stone-500 leading-relaxed">{s.desc}</p>
+            <div
+              key={i}
+              onClick={s.action}
+              className={`p-4 sm:p-6 rounded-3xl border text-center transition duration-300 ${s.action ? 'cursor-pointer transform hover:-translate-y-1' : ''} ${isDark ? 'bg-[#1C0F0A] border-amber-950/40' : 'bg-white border-stone-200 shadow-sm'} ${s.isNew ? 'ring-2 ring-amber-500/50' : ''}`}
+            >
+              {s.isNew && (
+                <span className="inline-block mb-3 bg-amber-500 text-stone-950 text-[9px] font-black uppercase px-2 py-0.5 rounded-full">
+                  New
+                </span>
+              )}
+              <div className={`w-10 h-10 sm:w-12 sm:h-12 mx-auto mb-3 sm:mb-4 rounded-2xl flex items-center justify-center ${s.isNew ? 'bg-amber-500 text-white' : 'bg-amber-500/10 text-amber-500'}`}>
+                <s.icon size={20} />
+              </div>
+              <h4 className={`font-bold text-xs sm:text-sm mb-2 ${isDark ? 'text-amber-100' : 'text-[#2A1810]'}`}>
+                {s.title}
+              </h4>
+              <p className="text-[11px] sm:text-xs text-stone-500 leading-relaxed">
+                {s.desc}
+              </p>
             </div>
           ))}
         </div>
       </section>
 
-      <section id="fleet" className={`py-20 px-6 border-t ${isDark ? 'bg-[#110905] border-amber-950/40' : 'bg-[#F9F7F3] border-stone-200'}`}>
+      <section id="fleet" className={`py-14 sm:py-20 px-4 sm:px-6 border-t ${isDark ? 'bg-[#110905] border-amber-950/40' : 'bg-[#F9F7F3] border-stone-200'}`}>
         <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-12">
+          <div className="text-center mb-10 sm:mb-12">
             <span className="text-amber-500 font-extrabold uppercase text-xs tracking-widest">Our Logistical Fleet</span>
-            <h3 className={`text-3xl font-serif font-bold mt-2 ${isDark ? 'text-amber-100' : 'text-[#2A1810]'}`}>Hearse Transport Coaches</h3>
+            <h3 className={`text-2xl sm:text-3xl font-serif font-bold mt-2 ${isDark ? 'text-amber-100' : 'text-[#2A1810]'}`}>
+              Hearse Transport Coaches
+            </h3>
           </div>
-          <div className="grid md:grid-cols-3 gap-6">
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
             {publicHearses.map(h => (
-              <div key={h.id} className={`rounded-3xl border p-5 transition hover:shadow-lg ${isDark ? 'bg-[#1C0F0A] border-amber-950/40' : 'bg-white border-stone-200'}`}>
+              <div key={h.id} className={`rounded-3xl border p-4 sm:p-5 transition hover:shadow-lg ${isDark ? 'bg-[#1C0F0A] border-amber-950/40' : 'bg-white border-stone-200'}`}>
                 {h.imageUrl ? (
-                  <div className="relative group h-48 rounded-2xl overflow-hidden mb-4 cursor-pointer" onClick={() => setActiveMedia({ url: mediaSrc(h.imageUrl), title: h.vehicleName, subtitle: h.licensePlate })}>
+                  <div
+                    className="relative group h-44 sm:h-48 rounded-2xl overflow-hidden mb-4 cursor-pointer"
+                    onClick={() => setActiveMedia({ url: mediaSrc(h.imageUrl), title: h.vehicleName, subtitle: h.licensePlate })}
+                  >
                     <img src={mediaSrc(h.imageUrl)} className="w-full h-full object-cover transition duration-500 group-hover:scale-105" alt={h.vehicleName} />
                   </div>
                 ) : (
-                  <div className="h-48 rounded-2xl border border-dashed border-amber-500/20 bg-amber-500/5 flex flex-col items-center justify-center mb-4 text-amber-500/80"><Car size={36} /><span className="text-[10px] mt-2 uppercase font-bold tracking-wider">Awaiting Portrait</span></div>
+                  <div className="h-44 sm:h-48 rounded-2xl border border-dashed border-amber-500/20 bg-amber-500/5 flex flex-col items-center justify-center mb-4 text-amber-500/80">
+                    <Car size={36} />
+                    <span className="text-[10px] mt-2 uppercase font-bold tracking-wider">Awaiting Portrait</span>
+                  </div>
                 )}
                 <h4 className="font-bold text-sm">{h.vehicleName}</h4>
                 <p className="text-xs text-stone-500">{h.make} {h.model} • {h.year}</p>
-                <div className="mt-4 pt-3 border-t border-stone-100 flex justify-between items-center text-xs">
-                  <span className="font-mono bg-stone-100 px-2 py-1 rounded text-stone-600 font-bold text-[11px]">{h.licensePlate}</span>
-                  <span className={`px-2.5 py-1 rounded-full font-black text-[9px] uppercase ${h.status === 'AVAILABLE' ? 'bg-emerald-50 text-emerald-700' : h.status === 'DISPATCHED' ? 'bg-amber-50 text-amber-700' : 'bg-stone-100 text-stone-600'}`}>{h.status}</span>
+                <div className="mt-4 pt-3 border-t border-stone-100 flex justify-between items-center text-xs gap-2">
+                  <span className="font-mono bg-stone-100 px-2 py-1 rounded text-stone-600 font-bold text-[11px] break-all">
+                    {h.licensePlate}
+                  </span>
+                  <span className={`px-2.5 py-1 rounded-full font-black text-[9px] uppercase whitespace-nowrap ${h.status === 'AVAILABLE' ? 'bg-emerald-50 text-emerald-700' : h.status === 'DISPATCHED' ? 'bg-amber-50 text-amber-700' : 'bg-stone-100 text-stone-600'}`}>
+                    {h.status}
+                  </span>
                 </div>
               </div>
             ))}
@@ -932,48 +1016,65 @@ const ClientWebsite = ({ onEnterAdmin, onEnterFamily, theme, onToggleTheme, addT
         </div>
       </section>
 
-      <section id="catalog" className="py-20 px-6 max-w-6xl mx-auto">
-        <div className="text-center mb-12">
+      <section id="catalog" className="py-14 sm:py-20 px-4 sm:px-6 max-w-6xl mx-auto">
+        <div className="text-center mb-10 sm:mb-12">
           <span className="text-amber-500 font-extrabold uppercase text-xs tracking-widest">Handmade Precision</span>
-          <h3 className={`text-3xl font-serif font-bold mt-2 ${isDark ? 'text-amber-100' : 'text-[#2A1810]'}`}>The Caskets Catalog</h3>
+          <h3 className={`text-2xl sm:text-3xl font-serif font-bold mt-2 ${isDark ? 'text-amber-100' : 'text-[#2A1810]'}`}>
+            The Caskets Catalog
+          </h3>
         </div>
-        <div className="grid md:grid-cols-4 gap-6">
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
           {publicCatalog.map(item => (
             <div key={item.id} className={`rounded-3xl border p-4 transition hover:shadow-lg ${isDark ? 'bg-[#1C0F0A] border-amber-950/40' : 'bg-white border-stone-200 shadow-sm'}`}>
               {item.imageUrl ? (
-                <div className="h-44 rounded-2xl overflow-hidden mb-4 cursor-pointer" onClick={() => setActiveMedia({ url: mediaSrc(item.imageUrl), title: item.name })}>
+                <div
+                  className="h-40 sm:h-44 rounded-2xl overflow-hidden mb-4 cursor-pointer"
+                  onClick={() => setActiveMedia({ url: mediaSrc(item.imageUrl), title: item.name })}
+                >
                   <img src={mediaSrc(item.imageUrl)} className="w-full h-full object-cover hover:scale-105 transition duration-500" alt={item.name} />
                 </div>
               ) : (
-                <div className="h-44 rounded-2xl border border-dashed border-amber-500/20 bg-amber-500/5 flex items-center justify-center mb-4 text-amber-500/80"><Package size={32} /></div>
+                <div className="h-40 sm:h-44 rounded-2xl border border-dashed border-amber-500/20 bg-amber-500/5 flex items-center justify-center mb-4 text-amber-500/80">
+                  <Package size={32} />
+                </div>
               )}
-              <h4 className="font-bold text-xs leading-tight">{item.name}</h4>
-              <p className="text-[10px] text-stone-400 uppercase mt-1 font-bold">{item.material.replace('_', ' ')} • {item.size}</p>
-              <div className="mt-3 flex justify-between items-center pt-2 border-t border-stone-50">
+
+              <h4 className="font-bold text-sm leading-tight">{item.name}</h4>
+              <p className="text-[10px] text-stone-400 uppercase mt-1 font-bold">
+                {item.material.replace('_', ' ')} • {item.size}
+              </p>
+
+              <div className="mt-3 flex justify-between items-center pt-2 border-t border-stone-50 gap-3">
                 <span className="text-xs text-stone-400">Retail Price</span>
-                <span className="text-xs font-black text-amber-600">KES {Number(item.retailPrice).toLocaleString()}</span>
+                <span className="text-xs font-black text-amber-600 whitespace-nowrap">
+                  KES {Number(item.retailPrice).toLocaleString()}
+                </span>
               </div>
             </div>
           ))}
         </div>
       </section>
 
-      <footer className="py-12 px-6 bg-[#1C0F0A] text-stone-400 text-xs border-t border-stone-900">
-        <div className="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
+      <footer className="py-8 sm:py-12 px-4 sm:px-6 bg-[#1C0F0A] text-stone-400 text-xs border-t border-stone-900">
+        <div className="max-w-6xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-4 sm:gap-6 text-center sm:text-left">
           <div className="flex items-center gap-2">
             <TripleMLogo className="w-8 h-8" />
             <p>© {new Date().getFullYear()} Triple M Funeral Services Nakuru-Subukia. All Rights Reserved.</p>
           </div>
-          <div className="flex gap-6">
-            <button onClick={onEnterFamily} className="text-amber-400 hover:text-white flex items-center gap-1 transition cursor-pointer"><UserIcon size={14}/> Family Portal</button>
-            <button onClick={onEnterAdmin} className="text-stone-500 hover:text-white flex items-center gap-1 transition cursor-pointer"><Lock size={14}/> Staff Portal</button>
+          <div className="flex flex-wrap justify-center gap-4 sm:gap-6">
+            <button onClick={onEnterFamily} className="text-amber-400 hover:text-white flex items-center gap-1 transition cursor-pointer">
+              <UserIcon size={14} /> Family Portal
+            </button>
+            <button onClick={onEnterAdmin} className="text-stone-500 hover:text-white flex items-center gap-1 transition cursor-pointer">
+              <Lock size={14} /> Staff Portal
+            </button>
           </div>
         </div>
       </footer>
     </div>
   );
 };
-
 // ============================================================================
 // FAMILY / CLIENT INTERACTIVE PLANNING PORTAL
 // ============================================================================
