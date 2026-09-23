@@ -72,7 +72,58 @@ interface TransportPlan { morgue: TransportLocation; ceremony: TransportLocation
 interface Booking { id: string; bookingNumber: string; clientName: string; contactPhone: string; burialDate: string; casketName: string; hearseName: string; selectedServices: string[]; totalQuote: number; amountPaid: number; status: 'PENDING' | 'CONFIRMED' | 'COMPLETED'; transport?: TransportPlan; }
 interface Memorial { id: string; fullName: string; age: string; dates: string; photos: string[]; eulogy: string; faith: string; relationship: string; tone: string; survivedBy: string; createdAt: string; }
 interface PaymentReceipt { id: string; amount: number; referenceNumber: string; date: string; status: 'PENDING_APPROVAL' | 'VERIFIED' | 'REJECTED'; note?: string; }
+// ==========================================
+// AUTHENTICATION & API CLIENT (PHP / MySQL)
+// ==========================================
 
+// 1. Live Login API Call
+async function apiLogin(email: string, password: string): Promise<{ success: boolean; user?: User; token?: string; error?: string }> {
+  try {
+    const res = await fetch(`${API}/api/login.php`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password })
+    });
+    const data = await res.json();
+    if (!res.ok) {
+      return { success: false, error: data.error || 'Invalid credentials' };
+    }
+    // Save JWT token & User info to localStorage
+    localStorage.setItem('auth_token', data.token);
+    localStorage.setItem('auth_user', JSON.stringify(data.user));
+    return { success: true, user: data.user, token: data.token };
+  } catch (err: any) {
+    return { success: false, error: 'Cannot connect to backend server. Make sure PHP is running.' };
+  }
+}
+
+// 2. Validate Existing Session on Page Reload
+async function apiGetMe(token: string): Promise<User | null> {
+  try {
+    const res = await fetch(`${API}/api/me.php`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    if (!res.ok) return null;
+    const data = await res.json();
+    return data.user;
+  } catch {
+    return null;
+  }
+}
+
+// 3. Helper to make authenticated requests anywhere in your app
+async function apiFetch(endpoint: string, options: RequestInit = {}) {
+  const token = localStorage.getItem('auth_token');
+  const headers = {
+    'Content-Type': 'application/json',
+    ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
+    ...options.headers,
+  };
+  return fetch(`${API}${endpoint.startsWith('/') ? '' : '/'}${endpoint}`, {
+    ...options,
+    headers,
+  });
+}
 // --- GLOBAL SHARED CONFIGURATIONS ---
 const nav = [
   { id: 'dashboard', icon: LayoutDashboard, label: 'Analytics' },
@@ -2375,7 +2426,7 @@ const StaffPortal = ({ onBack, theme, addToast }: any) => {
 };
 
 // ============================================================================
-// MAIN APP COMPONENT & DEFAULT EXPORT
+// MAIN APP COMPONENT & DEFAULT EXPORT (WITH SECURE AUTH)
 // ============================================================================
 export default function App() {
   const [appMode, setAppMode] = useState<'client' | 'admin' | 'family'>('client');
@@ -2388,6 +2439,23 @@ export default function App() {
   });
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' | 'info' } | null>(null);
 
+  // --- USER AUTHENTICATION STATE ---
+  const [currentUser, setCurrentUser] = useState<User | null>(() => {
+    try {
+      const saved = localStorage.getItem('auth_user');
+      return saved ? JSON.parse(saved) : null;
+    } catch {
+      return null;
+    }
+  });
+
+  // Login Form States
+  const [showLoginModal, setShowLoginModal] = useState(false);
+  const [loginEmail, setLoginEmail] = useState('');
+  const [loginPassword, setLoginPassword] = useState('');
+  const [loginError, setLoginError] = useState('');
+  const [isLoggingIn, setIsLoggingIn] = useState(false);
+
   const addToast = (message: string, type: 'success' | 'error' | 'info') => setToast({ message, type });
 
   const toggleTheme = () => {
@@ -2396,12 +2464,170 @@ export default function App() {
     localStorage.setItem('triplem_theme', next);
   };
 
+  // Check login token on page load
+  useEffect(() => {
+    const token = localStorage.getItem('auth_token');
+    if (token) {
+      apiGetMe(token).then((user) => {
+        if (user) {
+          setCurrentUser(user);
+        } else {
+          localStorage.removeItem('auth_token');
+          localStorage.removeItem('auth_user');
+          setCurrentUser(null);
+        }
+      });
+    }
+  }, []);
+
+  // Handle Admin Button Click
+  const handleEnterAdmin = () => {
+    if (currentUser && (currentUser.role === 'admin' || currentUser.role === 'staff')) {
+      setAppMode('admin');
+    } else {
+      setLoginError('');
+      setShowLoginModal(true);
+    }
+  };
+
+  // Handle Login Submit (Hits PHP & MySQL)
+  const handleLoginSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoginError('');
+    setIsLoggingIn(true);
+
+    const result = await apiLogin(loginEmail, loginPassword);
+
+    if (result.success && result.user) {
+      setCurrentUser(result.user);
+      setShowLoginModal(false);
+      setLoginPassword('');
+      setAppMode('admin');
+      addToast(`Welcome back, ${result.user.firstName}!`, 'success');
+    } else {
+      setLoginError(result.error || 'Invalid credentials');
+    }
+    setIsLoggingIn(false);
+  };
+
+  // Handle Logout
+  const handleLogout = () => {
+    localStorage.removeItem('auth_token');
+    localStorage.removeItem('auth_user');
+    setCurrentUser(null);
+    setAppMode('client');
+    addToast('Logged out successfully', 'info');
+  };
+
   return (
     <>
       {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
-      {appMode === 'client' && <ClientWebsite onEnterAdmin={() => setAppMode('admin')} onEnterFamily={() => setAppMode('family')} theme={theme} onToggleTheme={toggleTheme} addToast={addToast} />}
-      {appMode === 'family' && <FamilyPortal onBack={() => setAppMode('client')} theme={theme} addToast={addToast} />}
-      {appMode === 'admin' && <StaffPortal onBack={() => setAppMode('client')} theme={theme} addToast={addToast} />}
+
+      {/* --- SECURE LOGIN MODAL --- */}
+      {showLoginModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+          <div className="bg-white dark:bg-zinc-900 border border-amber-500/30 rounded-2xl p-6 sm:p-8 max-w-md w-full shadow-2xl relative animate-in fade-in zoom-in duration-200">
+            <button
+              onClick={() => setShowLoginModal(false)}
+              className="absolute top-4 right-4 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200"
+            >
+              <X className="w-6 h-6" />
+            </button>
+
+            <div className="text-center mb-6">
+              <div className="inline-flex p-3 rounded-full bg-amber-500/10 text-amber-500 mb-3">
+                <Lock className="w-8 h-8" />
+              </div>
+              <h2 className="text-2xl font-bold text-zinc-900 dark:text-white">Staff & Admin Login</h2>
+              <p className="text-sm text-zinc-500 dark:text-zinc-400 mt-1">Access the Funeral Management Portal</p>
+            </div>
+
+            {loginError && (
+              <div className="mb-4 p-3 rounded-lg bg-red-50 dark:bg-red-950/50 border border-red-200 dark:border-red-800 text-red-600 dark:text-red-300 text-sm flex items-center gap-2">
+                <AlertTriangle className="w-4 h-4 flex-shrink-0" />
+                <span>{loginError}</span>
+              </div>
+            )}
+
+            <form onSubmit={handleLoginSubmit} className="space-y-4">
+              <div>
+                <label className="block text-xs font-semibold uppercase tracking-wider text-zinc-600 dark:text-zinc-300 mb-1.5">
+                  Email Address
+                </label>
+                <input
+                  type="email"
+                  required
+                  value={loginEmail}
+                  onChange={(e) => setLoginEmail(e.target.value)}
+                  placeholder="admin@example.com"
+                  className="w-full px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-zinc-900 dark:text-white focus:ring-2 focus:ring-amber-500 focus:outline-none transition-all"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold uppercase tracking-wider text-zinc-600 dark:text-zinc-300 mb-1.5">
+                  Password
+                </label>
+                <input
+                  type="password"
+                  required
+                  value={loginPassword}
+                  onChange={(e) => setLoginPassword(e.target.value)}
+                  placeholder="••••••••••••"
+                  className="w-full px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-zinc-900 dark:text-white focus:ring-2 focus:ring-amber-500 focus:outline-none transition-all"
+                />
+              </div>
+
+              <button
+                type="submit"
+                disabled={isLoggingIn}
+                className="w-full py-3 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white font-semibold rounded-xl shadow-lg shadow-amber-500/20 disabled:opacity-50 transition-all flex items-center justify-center gap-2"
+              >
+                {isLoggingIn ? (
+                  <>
+                    <RefreshCw className="w-5 h-5 animate-spin" />
+                    <span>Verifying...</span>
+                  </>
+                ) : (
+                  <>
+                    <Lock className="w-5 h-5" />
+                    <span>Sign In to Dashboard</span>
+                  </>
+                )}
+              </button>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* --- APP VIEWS --- */}
+      {appMode === 'client' && (
+        <ClientWebsite
+          onEnterAdmin={handleEnterAdmin}
+          onEnterFamily={() => setAppMode('family')}
+          theme={theme}
+          onToggleTheme={toggleTheme}
+          addToast={addToast}
+        />
+      )}
+
+      {appMode === 'family' && (
+        <FamilyPortal
+          onBack={() => setAppMode('client')}
+          theme={theme}
+          addToast={addToast}
+        />
+      )}
+
+      {appMode === 'admin' && (
+        <StaffPortal
+          onBack={() => setAppMode('client')}
+          onLogout={handleLogout}
+          currentUser={currentUser}
+          theme={theme}
+          addToast={addToast}
+        />
+      )}
     </>
   );
 }
