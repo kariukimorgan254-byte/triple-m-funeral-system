@@ -1,13 +1,11 @@
-{
+﻿{
   "name": "frontend",
   "private": true,
   "version": "0.0.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "npx prisma generate && npx prisma db push --accept-data-loss && vite build",
-    "start": "node server.js",
-    "seed": "node seed.js",
+    "build": "vite build",
     "lint": "oxlint",
     "preview": "vite preview"
   },
