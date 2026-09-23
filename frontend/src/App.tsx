@@ -93,7 +93,7 @@ async function apiLogin(email: string, password: string): Promise<{ success: boo
     localStorage.setItem('auth_user', JSON.stringify(data.user));
     return { success: true, user: data.user, token: data.token };
   } catch (err: any) {
-    return { success: false, error: 'Cannot connect to backend server. Make sure PHP is running.' };
+    return { success: false, error: 'Unable to connect to server. Please try again.' };
   }
 }
 
