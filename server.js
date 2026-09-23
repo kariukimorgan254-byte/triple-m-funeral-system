@@ -21,12 +21,13 @@ const pool = new pg.Pool({
   ssl: process.env.DATABASE_URL?.includes('localhost') ? false : { rejectUnauthorized: false },
 });
 
-// API Routes
+// Health check
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', database: 'connected' });
 });
 
-app.post('/api/login', async (req, res) => {
+// Login Handler function
+const handleLoginRequest = async (req, res) => {
   const { email, password } = req.body;
   try {
     const { rows } = await pool.query('SELECT * FROM users WHERE email = $1', [email]);
@@ -46,9 +47,14 @@ app.post('/api/login', async (req, res) => {
     console.error('Login error:', err);
     res.status(500).json({ error: 'Server error' });
   }
-});
+};
 
-app.get('/api/me', async (req, res) => {
+// Accept both /api/login and /api/login.php for backward compatibility
+app.post('/api/login', handleLoginRequest);
+app.post('/api/login.php', handleLoginRequest);
+
+// Current User check (/api/me and /api/me.php)
+const handleMeRequest = async (req, res) => {
   const header = req.headers.authorization || '';
   const token = header.startsWith('Bearer ') ? header.slice(7) : null;
   if (!token) return res.status(401).json({ error: 'Unauthorized' });
@@ -62,7 +68,10 @@ app.get('/api/me', async (req, res) => {
   } catch {
     res.status(401).json({ error: 'Invalid token' });
   }
-});
+};
+
+app.get('/api/me', handleMeRequest);
+app.get('/api/me.php', handleMeRequest);
 
 // Auto-locate frontend dist folder
 const possibleDistPaths = [
@@ -78,7 +87,6 @@ if (staticDistPath) {
   console.log(`Serving static frontend from: ${staticDistPath}`);
   app.use(express.static(staticDistPath));
   
-  // Express 5 compatible catch-all
   app.use((req, res) => {
     if (req.path.startsWith('/api')) {
       return res.status(404).json({ error: `API route not found: ${req.method} ${req.path}` });
