@@ -15,13 +15,11 @@ const JWT_SECRET = process.env.JWT_SECRET || 'triple-m-secret-key';
 app.use(cors({ origin: '*' }));
 app.use(express.json());
 
-// Database Connection with Render SSL
 const pool = new pg.Pool({
   connectionString: process.env.DATABASE_URL,
   ssl: { rejectUnauthorized: false },
 });
 
-// Health check endpoint
 app.get('/api/health', async (req, res) => {
   try {
     await pool.query('SELECT 1');
@@ -31,10 +29,8 @@ app.get('/api/health', async (req, res) => {
   }
 });
 
-// Universal Login Handler
 const handleLoginRequest = async (req, res) => {
   const { email, password } = req.body;
-  
   if (!email || !password) {
     return res.status(400).json({ error: 'Email and password are required.' });
   }
@@ -48,28 +44,19 @@ const handleLoginRequest = async (req, res) => {
       return res.json({
         success: true,
         token,
-        user: { 
-          id: String(user.id), 
-          email: user.email, 
-          firstName: user.first_name, 
-          lastName: user.last_name, 
-          role: user.role 
-        }
+        user: { id: String(user.id), email: user.email, firstName: user.first_name, lastName: user.last_name, role: user.role }
       });
     } else {
       return res.status(401).json({ error: 'Invalid email or password' });
     }
   } catch (err) {
-    console.error('Database query error on login:', err);
-    return res.status(500).json({ error: 'Database error occurred. Please try again.' });
+    return res.status(500).json({ error: 'Database error occurred.' });
   }
 };
 
-// Accept all API login variants
 app.post('/api/login', handleLoginRequest);
 app.post('/api/login.php', handleLoginRequest);
 
-// Universal Me Handler
 const handleMeRequest = async (req, res) => {
   const header = req.headers.authorization || '';
   const token = header.startsWith('Bearer ') ? header.slice(7) : null;
@@ -89,7 +76,6 @@ const handleMeRequest = async (req, res) => {
 app.get('/api/me', handleMeRequest);
 app.get('/api/me.php', handleMeRequest);
 
-// Serve Static React Frontend
 const possibleDistPaths = [
   path.join(__dirname, 'dist'),
   path.join(__dirname, 'frontend', 'dist'),
@@ -100,9 +86,7 @@ const possibleDistPaths = [
 let staticDistPath = possibleDistPaths.find(p => fs.existsSync(p));
 
 if (staticDistPath) {
-  console.log(`Serving static frontend from: ${staticDistPath}`);
   app.use(express.static(staticDistPath));
-  
   app.use((req, res) => {
     if (req.path.startsWith('/api')) {
       return res.status(404).json({ error: `API route not found: ${req.method} ${req.path}` });
@@ -111,7 +95,7 @@ if (staticDistPath) {
   });
 } else {
   app.use((req, res) => {
-    res.status(404).json({ error: `Frontend dist folder not found.` });
+    res.status(404).json({ error: 'Frontend build not found.' });
   });
 }
 
