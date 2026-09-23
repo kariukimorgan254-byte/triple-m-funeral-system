@@ -1349,7 +1349,7 @@ const FamilyPortal = ({ onBack, theme, addToast }: any) => {
   if (!isLoggedIn) {
     return (
       <div className={`min-h-screen flex flex-col items-center justify-center p-4 relative font-sans ${isDark ? 'bg-[#150B07]' : 'bg-[#FDFBF7]'}`}>
-        <button onClick={onBack} className="absolute top-8 left-8 text-amber-500 hover:text-amber-400 flex items-center gap-2 font-bold text-xs transition cursor-pointer">
+        <button onClick={onBack} className="absolute top-4 left-4 sm:top-8 sm:left-8 flex items-center gap-2 text-sm px-3 py-1 rounded-md bg-transparent">
           <ChevronLeft size={16} /> Home Website
         </button>
 
@@ -2117,7 +2117,7 @@ const StaffPortal = ({ onBack, theme, addToast }: any) => {
   const filteredHearses = hearses.filter(h => hearseFilter === 'ALL' || h.status === hearseFilter);
 
   return (
-    <div className={`flex h-screen overflow-hidden font-sans ${isDark ? 'bg-[#110905] text-stone-200' : 'bg-[#F9F7F3] text-stone-800'}`}>
+   <div className={`min-h-screen lg:h-screen flex flex-col lg:flex-row overflow-x-hidden font-sans ${isDark ? 'bg-[#110905] text-stone-200' : 'bg-[#F9F7F3] text-stone-800'}`}>
       <ImageLightbox media={activeMedia} onClose={() => setActiveMedia(null)} />
       {viewingMemorial && <MemorialPageViewer memorial={viewingMemorial} onClose={() => setViewingMemorial(null)} />}
       {viewingTransportInvoice && viewingTransportInvoice.transport && (
@@ -2140,7 +2140,7 @@ const StaffPortal = ({ onBack, theme, addToast }: any) => {
           </div>
           <nav className="p-4 space-y-1">
             {nav.map(n => (
-              <button key={n.id} onClick={() => setTab(n.id)} className={`w-full flex items-center justify-between px-4 py-3 rounded-xl text-xs font-bold cursor-pointer transition ${tab === n.id ? 'bg-amber-500 text-stone-950 shadow-md' : 'text-stone-300 hover:bg-white/5'}`}>
+              <button key={n.id} className="w-full text-left flex items-center justify-between gap-3 px-3 py-2 rounded-md hover:bg-white/5">
                 <div className="flex items-center gap-3"><n.icon size={16} /> {n.label}</div>
                 {n.id === 'receipts' && pendingValidationDeposits > 0 && <span className="bg-rose-500 text-white text-[9px] font-black px-1.5 py-0.5 rounded-full">{pendingValidationDeposits}</span>}
                 {n.id === 'inventory' && lowStockAlerts > 0 && <span className="bg-amber-500 text-stone-900 text-[9px] font-black px-1.5 py-0.5 rounded-full">{lowStockAlerts}</span>}
@@ -2157,10 +2157,55 @@ const StaffPortal = ({ onBack, theme, addToast }: any) => {
         </div>
       </aside>
 
-      <main className="flex-1 p-6 md:p-8 overflow-y-auto text-slate-800">
+      <main className="flex-1 min-w-0 px-4 py-4 sm:px-6 sm:py-6 lg:px-8 overflow-y-auto text-slate-800">
+       {/* MOBILE STAFF HEADER */}
+<div className="lg:hidden mb-4 space-y-3">
+  <div className="flex items-center justify-between gap-3">
+    <button
+      onClick={onBack}
+      className="px-3 py-2 rounded-xl border border-stone-300 bg-white text-stone-700 text-xs font-bold flex items-center gap-2"
+    >
+      <ChevronLeft size={14} />
+      Back
+    </button>
+
+    <div className="text-right min-w-0">
+      <p className="text-[10px] uppercase tracking-wider text-stone-400 font-bold">Signed in as</p>
+      <p className="text-xs font-bold truncate">{currentUser.firstName} {currentUser.lastName}</p>
+    </div>
+
+    <button
+      onClick={() => {
+        setCurrentUser(null);
+        localStorage.removeItem('triplem_user');
+        addToast('Safe logout executed', 'info');
+      }}
+      className="p-2 rounded-xl border border-stone-300 bg-white text-stone-600"
+    >
+      <LogOut size={16} />
+    </button>
+  </div>
+
+  {/* MOBILE TAB BAR */}
+  <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
+    {nav.map(n => (
+      <button
+        key={n.id}
+        onClick={() => setTab(n.id)}
+        className={`shrink-0 px-3 py-2 rounded-xl text-[11px] font-bold border transition ${
+          tab === n.id
+            ? 'bg-amber-500 text-stone-950 border-amber-500'
+            : 'bg-white text-stone-600 border-stone-200'
+        }`}
+      >
+        {n.label}
+      </button>
+    ))}
+  </div>
+</div> 
         {tab === 'dashboard' && (
           <div className="space-y-6 text-stone-850">
-            <div className="flex justify-between items-center">
+            <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
               <div>
                 <span className="text-amber-500 text-[10px] uppercase tracking-wider font-extrabold">Operations Hub</span>
                 <h2 className="text-2xl font-serif font-bold text-stone-900">Executive Board</h2>
@@ -2168,14 +2213,14 @@ const StaffPortal = ({ onBack, theme, addToast }: any) => {
               <button onClick={syncAllDatabaseData} className="p-2 border rounded-xl hover:bg-stone-50 text-stone-500 transition cursor-pointer"><RefreshCw size={14} /></button>
             </div>
             
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
               <div className="bg-white p-5 rounded-2xl border text-slate-800 shadow-sm"><p className="text-[9px] uppercase text-stone-400 font-bold tracking-wider">Casket Blueprints</p><p className="text-2xl font-black mt-1">{inventory.length}</p></div>
               <div className="bg-white p-5 rounded-2xl border text-slate-800 shadow-sm"><p className="text-[9px] uppercase text-stone-400 font-bold tracking-wider">Fleet Registry</p><p className="text-2xl font-black mt-1">{hearses.length}</p></div>
               <div className="bg-white p-5 rounded-2xl border text-slate-800 shadow-sm"><p className="text-[9px] uppercase text-stone-400 font-bold tracking-wider">Digital Memorials</p><p className="text-2xl font-black mt-1 text-amber-600">{memorials.length}</p></div>
               <div className="bg-white p-5 rounded-2xl border text-slate-800 shadow-sm"><p className="text-[9px] uppercase text-stone-400 font-bold tracking-wider">Pending M-Pesa</p><p className="text-2xl font-black mt-1 text-rose-600">{pendingValidationDeposits}</p></div>
             </div>
 
-            <div className="grid md:grid-cols-3 gap-6">
+            <div className="grid md:grid-cols-2 gap-5">
               <div className="md:col-span-2 bg-white p-6 rounded-3xl border text-slate-800 shadow-sm space-y-4">
                 <h3 className="font-serif font-bold text-sm">Alerts & Actions</h3>
                 <div className="space-y-3 text-xs">
@@ -2286,8 +2331,7 @@ const StaffPortal = ({ onBack, theme, addToast }: any) => {
                 <button key={f} onClick={() => setHearseFilter(f)} className={`flex-1 py-1.5 px-3 text-[10px] font-black uppercase rounded-lg transition cursor-pointer ${hearseFilter === f ? 'bg-[#1C0F0A] text-amber-300' : 'text-stone-500 hover:bg-stone-50'}`}>{f}</button>
               ))}
             </div>
-
-            <div className="grid md:grid-cols-2 gap-6">
+         <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
               {filteredHearses.map(h => (
                 <div key={h.id} className="bg-white rounded-3xl border p-5 text-slate-800 relative shadow-sm hover:shadow-md transition">
                   <button onClick={() => handleDeleteHearse(h.id)} className="absolute top-4 right-4 p-2 rounded-full border bg-white/90 text-stone-400 hover:text-rose-600 cursor-pointer z-10 transition"><Trash2 size={14} /></button>
@@ -2407,7 +2451,8 @@ const StaffPortal = ({ onBack, theme, addToast }: any) => {
             </div>
 
             <div className="bg-white rounded-3xl border border-stone-200 shadow-sm overflow-hidden">
-              <table className="w-full text-left text-xs">
+  <div className="w-full overflow-x-auto">
+    <table className="min-w-[760px] w-full text-left text-xs">
                 <thead className="bg-stone-50 text-stone-400 uppercase text-[9px] font-black border-b border-stone-100">
                   <tr>
                     <th className="p-4">Submission Date</th>
@@ -2441,7 +2486,8 @@ const StaffPortal = ({ onBack, theme, addToast }: any) => {
               </table>
             </div>
           </div>
-        )}
+  </div>
+</div>)}
 
         {tab === 'memorials' && (
           <div className="space-y-6">
@@ -2449,7 +2495,7 @@ const StaffPortal = ({ onBack, theme, addToast }: any) => {
             {memorials.length === 0 ? (
               <div className="bg-white p-12 rounded-3xl border border-stone-200 text-center text-slate-400 text-xs">No guest remembrance pages built yet.</div>
             ) : (
-              <div className="grid md:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
                 {memorials.map(m => (
                   <div key={m.id} className="bg-white rounded-3xl border border-stone-200/60 overflow-hidden shadow-sm text-slate-800">
                     {m.photos[0] ? <img src={m.photos[0]} className="h-40 w-full object-cover" alt="" /> : <div className="h-40 bg-amber-500/5 border-b flex items-center justify-center text-amber-500/80"><Feather size={28} /></div>}
@@ -2468,9 +2514,13 @@ const StaffPortal = ({ onBack, theme, addToast }: any) => {
 
       {/* ADMIN CONSOLE MODALS */}
       {isAddCatalogOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
-          <div className="bg-white rounded-3xl w-full max-w-md overflow-hidden text-slate-800 shadow-2xl border border-stone-200">
-            <div className="bg-[#1C0F0A] text-amber-100 p-5 flex justify-between items-center"><h3 className="font-serif font-bold">Register Casket Model</h3><button onClick={() => setIsAddCatalogOpen(false)} className="cursor-pointer text-stone-400 hover:text-white"><X size={18} /></button></div>
+       <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 overflow-y-auto">
+          
+           <div className="bg-white rounded-3xl w-full max-w-md max-h-[90vh] overflow-y-auto text-slate-800 shadow-2xl border border-stone-200">
+              <div className="bg-[#1C0F0A] text-amber-100 p-5 flex justify-between items-center">
+                <h3 className="font-serif font-bold">Register Casket Model</h3>
+                <button onClick={() => setIsAddCatalogOpen(false)} className="cursor-pointer text-stone-400 hover:text-white"><X size={18} /></button>
+              </div>
             <form onSubmit={handleAddCasket} className="p-5 space-y-3.5 text-xs">
               <div>
                 <label className="block text-[9px] font-bold uppercase text-stone-500 tracking-wider mb-1">Casket Design Name *</label>
