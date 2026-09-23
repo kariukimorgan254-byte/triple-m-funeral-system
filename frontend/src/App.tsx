@@ -9,7 +9,7 @@ import {
   MapPin, Navigation, Route, Phone, Mail, UserCheck
 } from 'lucide-react';
 
-const API = import.meta.env.VITE_API_URL || '';
+const API = '';
 
 function mediaSrc(url?: string | null) {
   if (!url) return '';
