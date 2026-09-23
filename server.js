@@ -4,6 +4,7 @@ import pg from 'pg';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import path from 'path';
+import fs from 'fs';
 import { fileURLToPath } from 'url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -14,9 +15,15 @@ const JWT_SECRET = process.env.JWT_SECRET || 'triple-m-secret-key';
 app.use(cors());
 app.use(express.json());
 
+// Database Connection
 const pool = new pg.Pool({
   connectionString: process.env.DATABASE_URL,
   ssl: process.env.DATABASE_URL?.includes('localhost') ? false : { rejectUnauthorized: false },
+});
+
+// API Routes
+app.get('/api/health', (req, res) => {
+  res.json({ status: 'ok', database: 'connected' });
 });
 
 app.post('/api/login', async (req, res) => {
@@ -36,6 +43,7 @@ app.post('/api/login', async (req, res) => {
       res.status(401).json({ error: 'Invalid email or password' });
     }
   } catch (err) {
+    console.error('Login error:', err);
     res.status(500).json({ error: 'Server error' });
   }
 });
@@ -56,7 +64,29 @@ app.get('/api/me', async (req, res) => {
   }
 });
 
-app.use(express.static(path.join(__dirname, 'dist')));
-app.get('*', (req, res) => res.sendFile(path.join(__dirname, 'dist', 'index.html')));
+// Auto-locate frontend dist folder
+const possibleDistPaths = [
+  path.join(__dirname, 'dist'),
+  path.join(__dirname, 'frontend', 'dist'),
+  path.join(__dirname, 'client', 'dist'),
+  path.join(__dirname, '..', 'frontend', 'dist')
+];
+
+let staticDistPath = possibleDistPaths.find(p => fs.existsSync(p));
+
+if (staticDistPath) {
+  console.log(`Serving static frontend from: ${staticDistPath}`);
+  app.use(express.static(staticDistPath));
+  app.get('*', (req, res) => {
+    if (req.path.startsWith('/api')) {
+      return res.status(404).json({ error: `API route not found: ${req.method} ${req.path}` });
+    }
+    res.sendFile(path.join(staticDistPath, 'index.html'));
+  });
+} else {
+  app.get('*', (req, res) => {
+    res.status(404).json({ error: `Frontend dist folder not found. Please run build script.` });
+  });
+}
 
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
