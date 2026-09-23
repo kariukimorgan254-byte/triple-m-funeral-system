@@ -77,15 +77,17 @@ let staticDistPath = possibleDistPaths.find(p => fs.existsSync(p));
 if (staticDistPath) {
   console.log(`Serving static frontend from: ${staticDistPath}`);
   app.use(express.static(staticDistPath));
-  app.get('*', (req, res) => {
+  
+  // Express 5 compatible catch-all
+  app.use((req, res) => {
     if (req.path.startsWith('/api')) {
       return res.status(404).json({ error: `API route not found: ${req.method} ${req.path}` });
     }
     res.sendFile(path.join(staticDistPath, 'index.html'));
   });
 } else {
-  app.get('*', (req, res) => {
-    res.status(404).json({ error: `Frontend dist folder not found. Please run build script.` });
+  app.use((req, res) => {
+    res.status(404).json({ error: `Frontend dist folder not found.` });
   });
 }
 
