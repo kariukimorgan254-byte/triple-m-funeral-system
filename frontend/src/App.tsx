@@ -2091,7 +2091,7 @@ const StaffPortal = ({ onBack, theme, addToast }: any) => {
     return (
       <div className="min-h-screen flex items-center justify-center p-4 bg-[#150B07]">
         <button onClick={onBack} className="absolute top-8 left-8 text-amber-500 hover:text-amber-400 text-xs font-bold flex items-center gap-1 cursor-pointer transition"><ChevronLeft size={16} /> Home</button>
-        <form onSubmit={handleLogin} className="bg-[#1C0F0A] border border-amber-950/40 rounded-3xl p-8 w-full max-w-sm text-stone-200 space-y-5 shadow-2xl">
+        <form onSubmit={handleLogin} className="bg-[#1C0F0A] border border-amber-950/40 rounded-3xl p-5 sm:p-8 w-full max-w-sm ...">
           <TripleMLogo className="w-16 h-16 mx-auto" />
           <h2 className="text-center font-serif text-lg text-amber-100 font-bold">Admin Access</h2>
           {loginError && <div className="text-xs text-rose-300 bg-rose-900/30 p-3 rounded-xl">{loginError}</div>}
@@ -2486,8 +2486,7 @@ const StaffPortal = ({ onBack, theme, addToast }: any) => {
               </table>
             </div>
           </div>
-  </div>
-</div>)}
+        </div>)}
 
         {tab === 'memorials' && (
           <div className="space-y-6">
