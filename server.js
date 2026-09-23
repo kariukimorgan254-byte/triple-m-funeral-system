@@ -12,47 +12,64 @@ const app = express();
 const PORT = process.env.PORT || 4000;
 const JWT_SECRET = process.env.JWT_SECRET || 'triple-m-secret-key';
 
-app.use(cors());
+app.use(cors({ origin: '*' }));
 app.use(express.json());
 
-// Database Connection
+// Database Connection with Render SSL
 const pool = new pg.Pool({
   connectionString: process.env.DATABASE_URL,
-  ssl: process.env.DATABASE_URL?.includes('localhost') ? false : { rejectUnauthorized: false },
+  ssl: { rejectUnauthorized: false },
 });
 
-// Health check
-app.get('/api/health', (req, res) => {
-  res.json({ status: 'ok', database: 'connected' });
+// Health check endpoint
+app.get('/api/health', async (req, res) => {
+  try {
+    await pool.query('SELECT 1');
+    res.json({ status: 'ok', database: 'connected' });
+  } catch (err) {
+    res.status(500).json({ status: 'error', message: err.message });
+  }
 });
 
-// Login Handler
+// Universal Login Handler
 const handleLoginRequest = async (req, res) => {
   const { email, password } = req.body;
+  
+  if (!email || !password) {
+    return res.status(400).json({ error: 'Email and password are required.' });
+  }
+
   try {
-    const { rows } = await pool.query('SELECT * FROM users WHERE email = $1', [email]);
+    const { rows } = await pool.query('SELECT * FROM users WHERE LOWER(email) = LOWER($1) LIMIT 1', [email.trim()]);
     const user = rows[0];
 
     if (user && await bcrypt.compare(password, user.password_hash)) {
       const token = jwt.sign({ id: user.id, role: user.role }, JWT_SECRET, { expiresIn: '1d' });
-      res.json({
+      return res.json({
         success: true,
         token,
-        user: { id: user.id, email: user.email, firstName: user.first_name, lastName: user.last_name, role: user.role }
+        user: { 
+          id: String(user.id), 
+          email: user.email, 
+          firstName: user.first_name, 
+          lastName: user.last_name, 
+          role: user.role 
+        }
       });
     } else {
-      res.status(401).json({ error: 'Invalid email or password' });
+      return res.status(401).json({ error: 'Invalid email or password' });
     }
   } catch (err) {
-    console.error('Login error:', err);
-    res.status(500).json({ error: 'Server error' });
+    console.error('Database query error on login:', err);
+    return res.status(500).json({ error: 'Database error occurred. Please try again.' });
   }
 };
 
+// Accept all API login variants
 app.post('/api/login', handleLoginRequest);
 app.post('/api/login.php', handleLoginRequest);
 
-// Current User Handler
+// Universal Me Handler
 const handleMeRequest = async (req, res) => {
   const header = req.headers.authorization || '';
   const token = header.startsWith('Bearer ') ? header.slice(7) : null;
@@ -63,7 +80,7 @@ const handleMeRequest = async (req, res) => {
     const { rows } = await pool.query('SELECT id, email, first_name, last_name, role FROM users WHERE id = $1', [decoded.id]);
     const user = rows[0];
     if (!user) return res.status(401).json({ error: 'User not found' });
-    res.json({ user: { id: user.id, email: user.email, firstName: user.first_name, lastName: user.last_name, role: user.role } });
+    res.json({ user: { id: String(user.id), email: user.email, firstName: user.first_name, lastName: user.last_name, role: user.role } });
   } catch {
     res.status(401).json({ error: 'Invalid token' });
   }
@@ -72,7 +89,7 @@ const handleMeRequest = async (req, res) => {
 app.get('/api/me', handleMeRequest);
 app.get('/api/me.php', handleMeRequest);
 
-// Static frontend serving
+// Serve Static React Frontend
 const possibleDistPaths = [
   path.join(__dirname, 'dist'),
   path.join(__dirname, 'frontend', 'dist'),
